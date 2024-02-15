@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login form - The Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        header {
+            background-color: #ec4040;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            background-color: #444;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        .container {
+            width: 20%;
+            margin: auto;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        footer {
+            background-color: #ec4040;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<script>
+    function showAlert(message) {
+        alert(message);
+    }
+</script>
+
+<body>
+
+<header>
+    <h1> The Game </h1>
+</header>
+
+<div class="container">
+    <h2 class="user"> Login </h2>
+    <form action="{{ url_for('login') }}" method="post">
+        {% if message is defined and message %}
+            <script> showAlert("{{ message }}") </script>
+        {% endif %}
+        <br>
+        <div class="form-group">
+            <label class="ok"> <strong>Username:</strong></label>
+            <label for="name"></label><input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+            <label class="pop"> <strong> Password:</strong></label>
+            <label for="password"></label><input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <button class="btn" type="submit" class="btn btn-primary">Login</button>
+        <p class="bottom">Don't have an account?  <a class="bottom" href="{{url_for('register')}}"> Register here</a></p>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2024 The Game</p>
+</footer>
+
+</body>
+</html>
