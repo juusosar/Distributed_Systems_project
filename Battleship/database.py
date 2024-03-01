@@ -34,19 +34,6 @@ class Database:
         else:
             print("No database connection to close.")
 
-    def create_database(self):
-        try:
-            # Check if the database file already exists
-            #if os.path.exists(self.db_name):
-            #    print("Database file already exists.")
-            #else:
-            # Create the database file
-                with open("schema.sql") as f:
-                    self.connection.executescript(f.read())
-                print("Database file created successfully!")
-        except Exception as error:
-            print("Error:", error)
-
     # Function to hash a password
     @staticmethod
     def hash_password(password):
