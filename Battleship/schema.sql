@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS users;
+
 CREATE TABLE users (
     id int PRIMARY KEY,
     username varchar(25) NOT NULL,
@@ -7,7 +7,6 @@ CREATE TABLE users (
     registration_date date
 );
 
-DROP TABLE IF EXISTS user_game_stats;
 CREATE TABLE user_game_stats (
     user_id int,
     games_played int,
