@@ -47,18 +47,40 @@ class Database:
         self.cursor.execute("""
             INSERT INTO users (username, hashed_password, salt, registration_date)
             VALUES (?, ?, ?, ?)
-        """, (username, hashed_password, salt, registration_date))
+            """, (username, hashed_password, salt, registration_date))
+        
+        self.cursor.execute("""
+            INSERT INTO user_game_stats (username, games_played, won, lost, win_percentage)
+            VALUES (?, ?, ?, ?, ?)
+            """, (username, 0, 0, 0, 0))
 
     # Function to delete a user
-    def delete_user(self, user_id):
-        self.cursor.execute("DELETE FROM users WHERE id=?", (user_id,))
+    def delete_user(self, username):
+        self.cursor.execute("DELETE FROM users WHERE username=?", (username,))
 
     # Function to update game statistics for a user
-    def update_game_stats(self, user_id, games_played, won, lost):
+    def update_game_stats(self, username, result):
+
+        # Checking if player won or lost to update accordingly
+        if result == "w":
+            self.cursor.execute("""
+            UPDATE user_game_stats 
+            SET games_played = games_played + 1, won = won + 1
+            WHERE username = (?)
+            """, (username,))
+        else:
+            self.cursor.execute("""
+            UPDATE user_game_stats 
+            SET games_played = games_played + 1, lost = lost + 1
+            WHERE username = (?)
+            """, (username,))
+        
+        # Updates the win percentage of the player
         self.cursor.execute("""
-            INSERT INTO user_game_stats (user_id, games_played, won, lost)
-            VALUES (?, ?, ?, ?)
-        """, (user_id, games_played, won, lost))
+            UPDATE user_game_stats 
+            SET win_percentage = won * 100 / games_played
+            WHERE username = (?)
+            """, (username,))
 
     # Function to verify user credentials during login
     def verify_user(self, username, password):
@@ -71,7 +93,7 @@ class Database:
             salt = row[1]
 
             # Hash the entered password with the retrieved salt
-            entered_password_hashed = bcrypt.hashpw(password.encode('utf-8'), salt.encode('utf-8'))
+            entered_password_hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
 
             # Compare the hashed passwords
             if hashed_password == entered_password_hashed:
@@ -89,8 +111,21 @@ def main():
         # Add a new user
         db.add_user("example_user", "password123", "2024-02-15")
 
-        # Update game statistics for a user
-        db.update_game_stats(1, 1, 1, 0)
+        db.add_user("paavo", "sala", "2024-02-16")
+
+        db.add_user("linnea", "sana", "2024-02-17")
+
+        # A game was played
+        db.update_game_stats("paavo", "w")
+        db.update_game_stats("linnea", "l")
+
+        # A game was played
+        db.update_game_stats("paavo", "w")
+        db.update_game_stats("linnea", "l")
+
+        # A game was played
+        db.update_game_stats("paavo", "l")
+        db.update_game_stats("linnea", "w")
 
         # Commit the transaction
         db.connection.commit()
