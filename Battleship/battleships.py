@@ -2,7 +2,6 @@ import string
 import ship
 
 
-
 def create_board(n):
     """creates n x n sizes board"""
     board = []
@@ -10,17 +9,17 @@ def create_board(n):
         board.append(["O"] * n)
     return board
 
+
 def print_board(board):
     """prints board"""
     i = 1
-    
-    alphabet =  string.ascii_uppercase
+
+    alphabet = string.ascii_uppercase
     coordinates = "   "
     for y in range(len(board)):
         coordinates = coordinates + alphabet[y] + " "
-    
-    print(coordinates)
 
+    print(coordinates)
 
     for row in board:
         if i <= 9:
@@ -35,7 +34,7 @@ def set_ship(board, ship):
     """set ships on board"""
 
     while True:
-        #asking does player want to set ship vertical or horizontal
+        # asking does player want to set ship vertical or horizontal
         direction = input("\nDo you want this ship vertical (v) or horizontal (h): ")
 
         if direction == "h":
@@ -53,7 +52,8 @@ def set_ship(board, ship):
                 try:
                     column = input(f"\nEnter a column character from {string.ascii_uppercase[0:len(board)]} ")
                     if column.isalpha():
-                        if column in string.ascii_uppercase and string.ascii_uppercase.index(column) + ship.size <= len(board):
+                        if column in string.ascii_uppercase and string.ascii_uppercase.index(column) + ship.size <= len(
+                                board):
                             index = string.ascii_uppercase.index(column)
                             break
                         else:
@@ -62,25 +62,25 @@ def set_ship(board, ship):
                         raise TypeError
                 except TypeError:
                     print("\nGive a character!")
-            
+
             flag = True
 
-            for x in range(ship.size): 
+            for x in range(ship.size):
                 if board[row][index + x] == "S":
                     print("\nThere is a ship already in this position")
                     flag = False
                     break
-            if flag == True:
-                for x in range(ship.size):        
+            if flag:
+                for x in range(ship.size):
                     board[row][index + x] = "S"
                 break
-        
+
         elif direction == "v":
-            
+
             while True:
                 try:
                     row = int(input("\nEnter a row where you want to place your ship: ")) - 1
-                    if (row > len(board) or row < 0):
+                    if row > len(board) or row < 0:
                         print("\nYou are trying to place the ship out of bounds! Enter a different row.")
                     elif row + ship.size > len(board):
                         print("\nYou are trying to place the ship out of bounds! Enter a different row.")
@@ -105,25 +105,25 @@ def set_ship(board, ship):
 
             flag = True
 
-            for x in range(ship.size): 
+            for x in range(ship.size):
                 if board[row + x][index] == "S":
                     print("\nThere is a ship already in this position")
                     flag = False
                     break
-            if flag == True:
-                for x in range(ship.size):        
+            if flag:
+                for x in range(ship.size):
                     board[row + x][index] = "S"
                 break
         else:
             print("\nInvalid value")
 
-        
+
 def shoot(target_board, player_board):
     """Returns true if hits, returns false if it doesn't"""
     while True:
         try:
             row = int(input("\nEnter a row where you want to shoot: ")) - 1
-            if (row >= len(board) or row < 0):
+            if row >= len(target_board) or row < 0:
                 print("\nYou are trying to shoot out of bounds! Enter a different row.")
             else:
                 break
@@ -132,7 +132,8 @@ def shoot(target_board, player_board):
 
     while True:
         try:
-            column = input(f"\nEnter a column character from {string.ascii_uppercase[0:len(target_board)]} where you want shoot: ")
+            column = input(
+                f"\nEnter a column character from {string.ascii_uppercase[0:len(target_board)]} where you want shoot: ")
             if column.isalpha():
                 if column in string.ascii_uppercase and string.ascii_uppercase.index(column) < len(target_board):
                     index = string.ascii_uppercase.index(column)
@@ -153,8 +154,9 @@ def shoot(target_board, player_board):
         print("\nMISS!")
         return False
 
+
 def turn(username, player_board, player_shoot_board, target_board):
-    print(f"\n{username}'s turn")  
+    print(f"\n{username}'s turn")
     print_board(player_board)
     print_board(player_shoot_board)
     result = shoot(target_board, player_shoot_board)
@@ -162,7 +164,6 @@ def turn(username, player_board, player_shoot_board, target_board):
 
 
 def start_game(player1_username, player2_username, ship_list, board_size):
-    
     player1_hits = 0
     player2_hits = 0
     hitpoints = 0
@@ -180,24 +181,24 @@ def start_game(player1_username, player2_username, ship_list, board_size):
         print_board(player1_board)
 
     for y in ship_list:
-        print(f"\n{player2_username}'s turn to set ships on the board!") 
+        print(f"\n{player2_username}'s turn to set ships on the board!")
         set_ship(player2_board, y)
         print_board(player2_board)
 
     while player1_hits < hitpoints and player2_hits < hitpoints:
 
         while player1_hits < hitpoints and player2_hits < hitpoints:
-            
+
             result = turn(player1_username, player1_board, player1_shoot_board, player2_board)
-            if result == False:
+            if not result:
                 break
             else:
                 player1_hits = player1_hits + 1
                 continue
-        
+
         while player1_hits < hitpoints and player2_hits < hitpoints:
             result = turn(player2_username, player2_board, player2_shoot_board, player1_board)
-            if result == False:
+            if not result:
                 break
             else:
                 player2_hits = player2_hits + 1
@@ -216,10 +217,8 @@ ship_list.append(ship1)
 ship_list.append(ship2)
 start_game("juuso", "ville", ship_list, 5)
 
-
-#board = create_board(5)
-#set_ship(board, ship)
-#print_board(board)
-#print(shoot(board))
-#print_board(board)
-
+# board = create_board(5)
+# set_ship(board, ship)
+# print_board(board)
+# print(shoot(board))
+# print_board(board)
