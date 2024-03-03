@@ -36,125 +36,125 @@ def set_ship(board, ship):
 
     while True:
         #asking does player want to set ship vertical or horizontal
-        direction = input("Do you want this ship vertical or horizontal: ")
+        direction = input("\nDo you want this ship vertical (v) or horizontal (h): ")
 
-        
-        if direction == "horizontal":
-                while True:
-                    try:
-                        row = int(input("Enter a row where you want to place your ship:")) - 1
-                        if row > 4 or row < 0:
-                            print("There are not that many rows! Enter a row that is in a board")
-                        else:
-                            break
-                    except ValueError:
-                        print("Enter a number!")
-
-                while True:
-                    try:
-                        column = input(f"Enter a column character from {string.ascii_uppercase[0:len(board)]} ")
-                        if column.isalpha():
-                            if column in string.ascii_uppercase and string.ascii_uppercase.index(column) + ship.size <= len(board):
-                                index = string.ascii_uppercase.index(column)
-                                break
-                            else:
-                                print("Enter a right character")
-                        else:
-                            raise TypeError
-                    except TypeError:
-                        print("Give a alphabet!")
-               
-                flag = True
-
-                for x in range(ship.size): 
-                    if board[row][index + x] == "S":
-                        print("has a ship already in this position")
-                        flag = False
-                        break
-                if flag == True:
-                    for x in range(ship.size):        
-                        board[row][index + x] = "S"
-                    break
-
-       
-
-        if direction == "vertical":
-            
+        if direction == "h":
             while True:
                 try:
-                    row = int(input("Enter a row where you want to place your ship:")) - 1
-                    if (row > 4 or row < 0):
-                        print("There are not that many rows! Enter a row that is in a board")
-                    if row + ship.size > 5:
-                        print("There are not that many rows! Enter a row that is in a board")
+                    row = int(input("\nEnter a row where you want to place your ship: ")) - 1
+                    if row > 4 or row < 0:
+                        print("\nYou are trying to place the ship out of bounds! Enter a different row")
                     else:
                         break
                 except ValueError:
-                    print("Enter a number!")
+                    print("\nEnter a number!")
 
             while True:
                 try:
-                    column = input(f"Enter a column character from {string.ascii_uppercase[0:len(board)]} ")
+                    column = input(f"\nEnter a column character from {string.ascii_uppercase[0:len(board)]} ")
                     if column.isalpha():
                         if column in string.ascii_uppercase and string.ascii_uppercase.index(column) + ship.size <= len(board):
                             index = string.ascii_uppercase.index(column)
                             break
                         else:
-                            print("Enter a right character")
+                            print("\nYou are trying to place the ship out of bounds! Enter a different column")
                     else:
                         raise TypeError
                 except TypeError:
-                    print("Give a alphabet!")
+                    print("\nGive a character!")
+            
+            flag = True
+
+            for x in range(ship.size): 
+                if board[row][index + x] == "S":
+                    print("\nThere is a ship already in this position")
+                    flag = False
+                    break
+            if flag == True:
+                for x in range(ship.size):        
+                    board[row][index + x] = "S"
+                break
+        
+        elif direction == "v":
+            
+            while True:
+                try:
+                    row = int(input("\nEnter a row where you want to place your ship: ")) - 1
+                    if (row > len(board) or row < 0):
+                        print("\nYou are trying to place the ship out of bounds! Enter a different row.")
+                    elif row + ship.size > len(board):
+                        print("\nYou are trying to place the ship out of bounds! Enter a different row.")
+                    else:
+                        break
+                except ValueError:
+                    print("\nEnter a number!")
+
+            while True:
+                try:
+                    column = input(f"\nEnter a column character from {string.ascii_uppercase[0:len(board)]} ")
+                    if column.isalpha():
+                        if column in string.ascii_uppercase and string.ascii_uppercase.index(column) <= len(board):
+                            index = string.ascii_uppercase.index(column)
+                            break
+                        else:
+                            print("\nYou are trying to place the ship out of bounds! Enter a different row.")
+                    else:
+                        raise TypeError
+                except TypeError:
+                    print("\nGive a character!")
 
             flag = True
 
             for x in range(ship.size): 
                 if board[row + x][index] == "S":
-                    print("has a ship already in this position")
+                    print("\nThere is a ship already in this position")
                     flag = False
                     break
             if flag == True:
                 for x in range(ship.size):        
                     board[row + x][index] = "S"
                 break
+        else:
+            print("\nInvalid value")
 
         
 def shoot(target_board, player_board):
-    """Returns true if hit if not returns false"""
+    """Returns true if hits, returns false if it doesn't"""
     while True:
         try:
-            row = int(input("Enter a row where you want to shoot: ")) - 1
-            if (row > 4 or row < 0):
-                print("There are not that many rows! Enter a row that is in a board")
+            row = int(input("\nEnter a row where you want to shoot: ")) - 1
+            if (row >= len(board) or row < 0):
+                print("\nYou are trying to shoot out of bounds! Enter a different row.")
             else:
                 break
         except ValueError:
-            print("Enter a number!")
+            print("\nEnter a number!")
 
     while True:
         try:
-            column = input(f"Enter a column character from {string.ascii_uppercase[0:len(target_board)]} where you want shoot: ")
+            column = input(f"\nEnter a column character from {string.ascii_uppercase[0:len(target_board)]} where you want shoot: ")
             if column.isalpha():
                 if column in string.ascii_uppercase and string.ascii_uppercase.index(column) < len(target_board):
                     index = string.ascii_uppercase.index(column)
                     break
                 else:
-                    print("Enter a right character")
+                    print("\nEnter a right character")
             else:
                 raise TypeError
         except TypeError:
-            print("Give a alphabet!")
+            print("\nGive a character!")
+
     if target_board[row][index] == "S":
         player_board[row][index] = "H"
-        print("HIT!")
+        print("\nHIT!")
         return True
     else:
         player_board[row][index] = "M"
-        print("MISS!")
+        print("\nMISS!")
         return False
 
 def turn(username, player_board, player_shoot_board, target_board):
-    print(f"{username}'s turn")  
+    print(f"\n{username}'s turn")  
     print_board(player_board)
     print_board(player_shoot_board)
     result = shoot(target_board, player_shoot_board)
@@ -175,12 +175,12 @@ def start_game(player1_username, player2_username, ship_list, board_size):
     player2_shoot_board = create_board(board_size)
 
     for x in ship_list:
-        print(f"{player1_username}'s turn to set ships on board!")
+        print(f"\n{player1_username}'s turn to set ships on the board!")
         set_ship(player1_board, x)
         print_board(player1_board)
 
     for y in ship_list:
-        print(f"{player2_username}'s turn to set ships on board!") 
+        print(f"\n{player2_username}'s turn to set ships on the board!") 
         set_ship(player2_board, y)
         print_board(player2_board)
 
@@ -222,7 +222,4 @@ start_game("juuso", "ville", ship_list, 5)
 #print_board(board)
 #print(shoot(board))
 #print_board(board)
-
-
-
 
