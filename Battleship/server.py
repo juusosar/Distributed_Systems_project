@@ -62,7 +62,6 @@ def logout():
     return res
 
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     message = ''
@@ -110,6 +109,9 @@ def register():
         else:
             message = 'Please fill out the form !'
         return render_template('register.html', message=message)
+
+    if request.method == "GET":
+        return render_template('register.html')
 
 
 @app.route("/user", methods=["GET", "POST"])
