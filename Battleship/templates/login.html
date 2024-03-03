@@ -62,20 +62,20 @@
 
 <div class="container">
     <h2 class="user"> Login </h2>
-    <form action="{{ url_for('login') }}" method="post">
+    <form action="/login" method="post">
         {% if message is defined and message %}
-            <script> showAlert("{{ message }}") </script>
+        <h5> {{ message }} </h5>
         {% endif %}
         <br>
         <div class="form-group">
-            <label class="ok"> <strong>Username:</strong></label>
-            <label for="name"></label><input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+            <label for="name"> <strong>Username:</strong></label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
         </div>
         <div class="form-group">
-            <label class="pop"> <strong> Password:</strong></label>
-            <label for="password"></label><input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+            <label for="password"> <strong> Password:</strong></label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"><br/>
         </div>
-        <button class="btn" type="submit" class="btn btn-primary">Login</button>
+        <button name="button" type="submit">Login</button>
         <p class="bottom">Don't have an account?  <a class="bottom" href="{{url_for('register')}}"> Register here</a></p>
     </form>
 </div>
