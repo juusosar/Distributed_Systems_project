@@ -16,7 +16,7 @@ class Database:
         try:
             self.connection = sqlite3.connect(self.db_name)
             try:
-                with open("./Battleship/schema.sql") as f:
+                with open("schema.sql") as f:
                     self.connection.executescript(f.read())
             except sqlite3.Error as error:
                 print("Error:", error)
