@@ -153,59 +153,70 @@ def shoot(target_board, player_board):
         print("MISS!")
         return False
 
+def turn(username, player_board, player_shoot_board, target_board):
+    print(f"{username}'s turn")  
+    print_board(player_board)
+    print_board(player_shoot_board)
+    result = shoot(target_board, player_shoot_board)
+    return result
 
 
-
-def start_game(player1_username, player2_username, board_size):
-    print(ship.size)
+def start_game(player1_username, player2_username, ship_list, board_size):
+    
     player1_hits = 0
     player2_hits = 0
+    hitpoints = 0
+    for x in range(0, len(ship_list)):
+        hitpoints += ship_list[x].size
 
     player1_board = create_board(board_size)
     player1_shoot_board = create_board(board_size)
     player2_board = create_board(board_size)
     player2_shoot_board = create_board(board_size)
 
-    print("Player 1 turn to set ships on board!")
-    set_ship(player1_board, ship)
-    print_board(player1_board)
+    for x in ship_list:
+        print(f"{player1_username}'s turn to set ships on board!")
+        set_ship(player1_board, x)
+        print_board(player1_board)
 
-    print("Player 2 turn to set ships on board!") 
-    set_ship(player2_board, ship)
-    print_board(player2_board)
+    for y in ship_list:
+        print(f"{player2_username}'s turn to set ships on board!") 
+        set_ship(player2_board, y)
+        print_board(player2_board)
 
-    while player1_hits < ship.size and player2_hits < ship.size:
+    while player1_hits < hitpoints and player2_hits < hitpoints:
 
-        while player1_hits < ship.size and player2_hits < ship.size:
-            print("player 1 turn")
-            print(player1_hits)
-            print_board(player1_board)
-            print_board(player1_shoot_board)
-            if shoot(player2_board, player1_shoot_board) == False:
+        while player1_hits < hitpoints and player2_hits < hitpoints:
+            
+            result = turn(player1_username, player1_board, player1_shoot_board, player2_board)
+            if result == False:
                 break
             else:
                 player1_hits = player1_hits + 1
                 continue
         
-        while player1_hits < ship.size and player2_hits < ship.size:
-            print("player 2 turn")
-            print(player2_hits)
-            print_board(player2_board)
-            print_board(player2_shoot_board)
-            if shoot(player1_board, player2_shoot_board) == False:
+        while player1_hits < hitpoints and player2_hits < hitpoints:
+            result = turn(player2_username, player2_board, player2_shoot_board, player1_board)
+            if result == False:
                 break
             else:
                 player2_hits = player2_hits + 1
                 continue
 
-    if player1_hits == ship.size:
-        return "player1", "player2"
+    if player1_hits == hitpoints:
+        return player1_username, player2_username
     else:
-        return "player2", "player1"
+        return player2_username, player1_username
 
-ship = ship.Ship("Destroyer", 3)
 
-print(start_game(ship, 5))
+ship_list = list()
+ship1 = ship.Ship("Destroyer", 3)
+ship2 = ship.Ship("Tanker", 4)
+ship_list.append(ship1)
+ship_list.append(ship2)
+start_game("juuso", "ville", ship_list, 5)
+
+
 #board = create_board(5)
 #set_ship(board, ship)
 #print_board(board)
