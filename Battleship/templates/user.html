@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration form</title>
+    <title>Welcome to The Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,12 +60,14 @@
     </div>
     <br>
     <div class="row">
-        Logged in : <strong class="user">  {{session.name}} </strong>| <a href="{{ url_for('logout') }}"> Logout</a>
+        Logged in: <strong class="user">  {{user}} </strong>| <a href="{{ url_for('logout') }}"> Logout</a>
     </div>
     <br><br>
     <div class="row">
 
-        <h2>Welcome to the User profile page... </h2>
+        <h5>Welcome to the User profile page... </h5>
+
+        <button name="startgame" type="submit"> Start Game</button>
     </div>
 </div>
 
