@@ -1,6 +1,5 @@
 """ database.py """
 import sqlite3
-import datetime
 import typing
 import os
 import bcrypt
@@ -41,18 +40,34 @@ class Database:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password, salt
 
+    # Checks if an username is already taken, returns True/False
+    def check_user(self, username):
+        exists = False
+
+        self.cursor.execute("SELECT COUNT(*) FROM users WHERE username=?", (username,))
+
+        username_check = self.cursor.fetchone()
+        if username_check[0] != 0:
+
+            print('Username already taken')
+            exists = True
+
+        return exists
+        
+
     # Function to add a new user
-    def add_user(self, username, password, registration_date):
-        hashed_password, salt = self.hash_password(password)
+    def add_user(self, username, password, salt, registration_date):
+
         self.cursor.execute("""
             INSERT INTO users (username, hashed_password, salt, registration_date)
             VALUES (?, ?, ?, ?)
-            """, (username, hashed_password, salt, registration_date))
+            """, (username, password, salt, registration_date))
         
         self.cursor.execute("""
             INSERT INTO user_game_stats (username, games_played, won, lost, win_percentage)
             VALUES (?, ?, ?, ?, ?)
             """, (username, 0, 0, 0, 0))
+
 
     # Function to delete a user
     def delete_user(self, username):
@@ -84,6 +99,7 @@ class Database:
 
     # Function to verify user credentials during login
     def verify_user(self, username, password):
+        verified = False
         # Retrieve hashed password and salt from the database for the given username
         self.cursor.execute("SELECT hashed_password, salt FROM users WHERE username=?", (username,))
         row = self.cursor.fetchone()
@@ -97,8 +113,8 @@ class Database:
 
             # Compare the hashed passwords
             if hashed_password == entered_password_hashed:
-                return True
-        return False
+                verified = True
+        return verified
 
 
 # Example usage
@@ -113,6 +129,7 @@ def main():
 
         db.add_user("paavo", "sala", "2024-02-16")
 
+        db.add_user("linnea", "sana", "2024-02-17")
         db.add_user("linnea", "sana", "2024-02-17")
 
         # A game was played
