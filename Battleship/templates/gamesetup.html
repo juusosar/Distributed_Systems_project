@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>The Game </h1>
+</header>
+<div class="userparent">
+    <div class="user">
+        <div>
+            <h2>User Profile</h2>
+            <br>
+            Logged in: <strong>  {{user}} </strong>| <a href="{{ url_for('logout') }}"> Logout</a>
+        </div>
+    </div>
+    <div class="setup">
+
+        <!-- Button to start/restart the game -->
+        <button id="start-button">Start Game</button>
+
+    </div>
+    <div class="gamesetup-container">
+        <h2>Game board setup</h2>
+        <!-- Game grid for player's board -->
+        <div class="grid" id="grid-p1">
+        {% for row in range(10) %}
+            {% for col in range(10) %}
+                <div class="cell" id="p1-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+            {% endfor %}
+        {% endfor %}
+        </div>
+
+    </div>
+</div>
+<footer>
+    <p>&copy; 2024 The Game</p>
+</footer>
+
+</body>
+</html>

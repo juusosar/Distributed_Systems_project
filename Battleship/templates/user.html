@@ -4,48 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to The Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
-        header {
-            background-color: #ec4040;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        .container {
-            width: 20%;
-            margin: 0 auto;
-            background-color: #f2f2f2;
-            padding: 20px;
-        }
-        footer {
-            background-color: #ec4040;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
@@ -55,20 +14,21 @@
 </header>
 
 <div class="container">
-    <div class="row">
+    <form action="/user" method="post">
+    <div>
         <h2>User Profile</h2>
     </div>
     <br>
-    <div class="row">
+    <div>
         Logged in: <strong class="user">  {{user}} </strong>| <a href="{{ url_for('logout') }}"> Logout</a>
     </div>
     <br><br>
-    <div class="row">
-
-        <h5>Welcome to the User profile page... </h5>
-
-        <button name="startgame" type="submit"> Start Game</button>
+    <div>
+        <h3>Welcome to the Game</h3>
+        <p> Press button to start creating your board </p>
+        <button name="startgame" type="submit" value="start"> Create board</button>
     </div>
+    </form>
 </div>
 
 <footer>

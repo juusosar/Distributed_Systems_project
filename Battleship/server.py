@@ -3,8 +3,10 @@ import sqlite3
 from database import Database
 from datetime import date
 import bcrypt
+from turbo_flask import Turbo
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+turbo = Turbo(app)
 session = {}
 db = Database('database.db')
 
@@ -65,6 +67,8 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     message = ''
+    if request.method == 'GET':
+        return render_template('register.html')
     if request.method == 'POST':
         if request.form['name'] != "" and request.form['password'] != "":
             username = request.form['name']
@@ -110,38 +114,42 @@ def register():
             message = 'Please fill out the form !'
         return render_template('register.html', message=message)
 
-    if request.method == "GET":
-        return render_template('register.html')
-
 
 @app.route("/user", methods=["GET", "POST"])
 def user():
+    userid = request.cookies.get("userid")
     if request.method == "GET":
         if request.cookies.get('userid'):
-            return render_template("user.html", user=request.cookies.get('userid'))
+            return render_template("user.html", user=userid)
         else:
             return redirect(url_for('login'))
 
     if request.method == "POST":
+        if request.form['startgame'] == "start":
+            return render_template("gamesetup.html", user=userid)
         # TODO START GAME
-        return redirect(url_for('login'))
+        return render_template("game.html")
 
 
-@app.route('/setcookie', methods=['POST'])
-def set_cookie():
-    if request.method == 'POST':
-        user = request.form['nm']
-
-    resp = make_response(render_template('cookie.html'))
-    resp.set_cookie('userID', user)
-
-    return resp
+@app.route("/game", methods=["GET"])
+def game():
+    if request.method == "GET":
+        return render_template("game.html")
 
 
-@app.route('/getcookie')
-def get_cookie():
-    name = request.cookies.get('userID')
-    return '<h1>Welcome to The Game, ' + name + '</h1>'
+@app.route('/cell_click', methods=['POST'])
+def handle_click():
+    data = request.json
+    row = data['row']
+    col = data['col']
+    player = data['player']
+
+    print(col, row, player)
+    # Perform server-side logic here
+
+    return jsonify({'message': 'Cell clicked successfully',
+                    'col': col,
+                    'row': row})
 
 
 # Function to hash a password
