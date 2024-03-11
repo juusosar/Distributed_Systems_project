@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battleship Game</title>
+    <title>Battleship Game Setup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -21,13 +21,21 @@
     </div>
     <div class="setup">
 
-        <h4>Place ship: length 4</h4>
+        <h3 id="shiptext">Place ship of length <span id="shiplength"><u>5</u></span></h3>
+        <br>
         <p>Ship orientation: </p>
         <label><input type="radio" name="orientation" id="h" checked>Horizontal</label>
         <label><input type="radio" name="orientation" id="v">Vertical</label>
-        <p>Place ship by clicking the board</p>
+        <p>
+            <br><br>
+            Place ship by clicking the board.
+            <br><br>
+            Horizontally it is placed to the <b>right</b> of the clicked cell.
+            <br><br>
+            Vertically it is placed <b>downwards</b> from the clicked cell.
+        </p>
         <!-- Button to start/restart the game -->
-        <button id="start-button">Start Game</button>
+        <button id="start-button" hidden>Start Game</button>
 
     </div>
     <div class="gamesetup-container">
@@ -37,7 +45,7 @@
         {% for row in range(10) %}
             {% for col in range(10) %}
                 <div class="cell" id="cell-{{ row }}-{{ col }}"
-                     onclick="handleCellClick({{ row }}, {{ col }})"></div>
+                     onclick="handleCellClickSetup({{ row }}, {{ col }})"></div>
             {% endfor %}
         {% endfor %}
         </div>

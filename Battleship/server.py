@@ -3,10 +3,8 @@ import sqlite3
 from database import Database
 from datetime import date
 import bcrypt
-from turbo_flask import Turbo
 
 app = Flask(__name__, static_url_path='/static')
-turbo = Turbo(app)
 session = {'ships': []}
 
 db = Database('database.db')
@@ -126,8 +124,9 @@ def user():
             return redirect(url_for('login'))
 
     if request.method == "POST":
-        if request.form['startgame'] == "start":
-            return render_template("gamesetup.html", user=userid)
+        ship_lengths = [4, 3, 5, 2]
+        if request.form['startsetup'] == "start":
+            return render_template("gamesetup.html", user=userid, ships=ship_lengths)
         # TODO START GAME
         return render_template("game.html")
 
@@ -140,26 +139,33 @@ def game():
 
 @app.route('/cell_click', methods=['POST'])
 def handle_click():
-    data = request.json
-    player = request.cookies.get('userid')
-    row = data['row']
-    col = data['col']
-    direction = data['orientation']
-    #length = data['length']
-    #state = data['state']
+    try:
+        data = request.json
+        player = request.cookies.get('userid')
+        row = data['row']
+        col = data['col']
+        direction = data['orientation']
+        length = data['length']
+        #state = data['state']
 
-    session['ships'].append({
-        'col': col,
-        'row': row,
-        'direction': direction,
-    })
+        session['ships'].append({
+            'col': col,
+            'row': row,
+            'direction': direction,
+            'length': length
+        })
 
-    print(col, row, player)
-    # Perform server-side logic here
+        print(col, row, player)
+        # Perform server-side logic here
 
-    return jsonify({'message': 'Cell clicked successfully',
-                    'col': col,
-                    'row': row})
+        return jsonify({'message': 'Cell clicked successfully',
+                        'col': col,
+                        'row': row})
+
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'Error'})
+
 
 
 # Function to hash a password
