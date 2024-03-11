@@ -1,0 +1,118 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+header {
+    background-color: #ec4040;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    background-color: #444;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+}
+
+nav a:hover {
+    background-color: #555;
+}
+
+.container {
+    background-color: #f2f2f2;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer {
+    background-color: #ec4040;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.board1 {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 2px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    position: fixed;
+}
+
+.board2 {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 2px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    position: fixed;
+}
+
+.board div {
+    background-color: red;
+}
+
+.userparent {
+    display: inline-flex;
+}
+.user {
+    background-color: #f2f2f2;
+    display: flex;
+    margin-left: 50px;
+    right: auto;
+}
+
+.setup {
+    margin-left: 200px;
+}
+
+.gamesetup-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap; /* Prevent items from wrapping */
+    margin-bottom: 20px; /* Add margin between grids */
+    margin-left: 500px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px); /* Adjust columns as needed */
+    grid-template-rows: repeat(10, 40px); /* Adjust rows as needed */
+    gap: 2px;
+    margin-right: 50px;
+}
+
+.cell {
+    background-color: lightgrey;
+    border: 1px solid black;
+    cursor: pointer;
+    margin: 2px;
+}
+.cell:hover {
+    background-color: grey;
+}

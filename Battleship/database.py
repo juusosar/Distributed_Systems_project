@@ -16,7 +16,7 @@ class Database:
         try:
             self.connection = sqlite3.connect(self.db_name)
             try:
-                with open("Battleship/schema.sql") as f:
+                with open("schema.sql") as f:
                     self.connection.executescript(f.read())
             except sqlite3.Error as error:
                 print("Error:", error)
@@ -40,7 +40,7 @@ class Database:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password, salt
 
-    # Checks if an username is already taken, returns True/False
+    # Checks if a username is already taken, returns True/False
     def check_user(self, username):
         exists = False
 
@@ -48,12 +48,10 @@ class Database:
 
         username_check = self.cursor.fetchone()
         if username_check[0] != 0:
-
             print('Username already taken')
             exists = True
 
         return exists
-        
 
     # Function to add a new user
     def add_user(self, username, password, salt, registration_date):
@@ -62,12 +60,11 @@ class Database:
             INSERT INTO users (username, hashed_password, salt, registration_date)
             VALUES (?, ?, ?, ?)
             """, (username, password, salt, registration_date))
-        
+
         self.cursor.execute("""
             INSERT INTO user_game_stats (username, games_played, won, lost, win_percentage)
             VALUES (?, ?, ?, ?, ?)
             """, (username, 0, 0, 0, 0))
-
 
     # Function to delete a user
     def delete_user(self, username):
@@ -89,7 +86,7 @@ class Database:
             SET games_played = games_played + 1, lost = lost + 1
             WHERE username = (?)
             """, (username,))
-        
+
         # Updates the win percentage of the player
         self.cursor.execute("""
             UPDATE user_game_stats 

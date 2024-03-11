@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header>
+    <h1> The Game </h1>
+</header>
+
+
+    <div class="grid-container">
+        <!-- Game grid for player1 board -->
+        <div class="grid" id="grid-p1">
+        {% for row in range(10) %}
+            {% for col in range(10) %}
+                <div class="cell" id="p1-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+            {% endfor %}
+        {% endfor %}
+        </div>
+        <!-- Game grid for player2 board -->
+        <div class="grid" id="grid-p2">
+        {% for row in range(10) %}
+            {% for col in range(10) %}
+                <div class="cell" id="p2-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+            {% endfor %}
+        {% endfor %}
+        </div>
+    </div>
+            <!-- Button to start/restart the game -->
+        <button id="start-button">Start Game</button>
+
+<script src="../static/game.js"></script>
+<footer>
+    <p>&copy; 2024 The Game</p>
+</footer>
+
+</body>
+</html>

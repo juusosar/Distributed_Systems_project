@@ -4,48 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login form - The Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
-        header {
-            background-color: #ec4040;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        .container {
-            width: 20%;
-            margin: auto;
-            background-color: #f2f2f2;
-            padding: 20px;
-        }
-        footer {
-            background-color: #ec4040;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <script>
@@ -61,8 +20,8 @@
 </header>
 
 <div class="container">
-    <h2 class="user"> Login </h2>
     <form action="/login" method="post">
+    <h2> Login </h2>
         {% if message is defined and message %}
         <h5> {{ message }} </h5>
         {% endif %}
