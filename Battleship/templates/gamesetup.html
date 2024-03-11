@@ -9,7 +9,7 @@
 <body>
 
 <header>
-    <h1>The Game </h1>
+    <h1>The Game</h1>
 </header>
 <div class="userparent">
     <div class="user">
@@ -21,6 +21,11 @@
     </div>
     <div class="setup">
 
+        <h4>Place ship: length 4</h4>
+        <p>Ship orientation: </p>
+        <label><input type="radio" name="orientation" id="h" checked>Horizontal</label>
+        <label><input type="radio" name="orientation" id="v">Vertical</label>
+        <p>Place ship by clicking the board</p>
         <!-- Button to start/restart the game -->
         <button id="start-button">Start Game</button>
 
@@ -31,16 +36,19 @@
         <div class="grid" id="grid-p1">
         {% for row in range(10) %}
             {% for col in range(10) %}
-                <div class="cell" id="p1-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+                <div class="cell" id="cell-{{ row }}-{{ col }}"
+                     onclick="handleCellClick({{ row }}, {{ col }})"></div>
             {% endfor %}
         {% endfor %}
         </div>
 
     </div>
 </div>
+
 <footer>
     <p>&copy; 2024 The Game</p>
 </footer>
 
+<script src="../static/game.js"></script>
 </body>
 </html>

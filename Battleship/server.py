@@ -7,7 +7,8 @@ from turbo_flask import Turbo
 
 app = Flask(__name__, static_url_path='/static')
 turbo = Turbo(app)
-session = {}
+session = {'ships': []}
+
 db = Database('database.db')
 
 
@@ -119,7 +120,7 @@ def register():
 def user():
     userid = request.cookies.get("userid")
     if request.method == "GET":
-        if request.cookies.get('userid'):
+        if userid:
             return render_template("user.html", user=userid)
         else:
             return redirect(url_for('login'))
@@ -140,9 +141,18 @@ def game():
 @app.route('/cell_click', methods=['POST'])
 def handle_click():
     data = request.json
+    player = request.cookies.get('userid')
     row = data['row']
     col = data['col']
-    player = data['player']
+    direction = data['orientation']
+    #length = data['length']
+    #state = data['state']
+
+    session['ships'].append({
+        'col': col,
+        'row': row,
+        'direction': direction,
+    })
 
     print(col, row, player)
     # Perform server-side logic here
