@@ -4,6 +4,7 @@ from database import Database
 from datetime import date
 import bcrypt
 from turbo_flask import Turbo
+import os
 
 app = Flask(__name__, static_url_path='/static')
 turbo = Turbo(app)
@@ -160,4 +161,5 @@ def hash_password(password):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
