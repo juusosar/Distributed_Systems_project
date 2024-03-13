@@ -3,11 +3,96 @@ import sqlite3
 from database import Database
 from datetime import date
 import bcrypt
+import threading
+import queue
+import time
 
 app = Flask(__name__, static_url_path='/static')
 session = {'ships': []}
 
 db = Database('database.db')
+
+# Matchmaking queue and lock
+matchmaking_queue = queue.Queue()
+matchmaking_lock = threading.Lock()
+
+# List of players waiting for a match
+# This allows direct interaction with waiting players, such as notifying them of their 
+# current status or allowing them to cancel their matchmaking requests in find_match/flask_handle.
+waiting_players = []
+
+
+# Player class to hold player data
+class Player:
+    def __init__(self, player_id, player_board):
+        self.player_id = player_id
+        self.player_board = player_board
+
+
+# Define a class to represent a game instance
+# This class could be moved to another file with the game logic (battleships.py)
+class GameInstance:
+    def __init__(self, player1, player2):
+        self.player1 = player1
+        self.player2 = player2
+    
+    def start_game(self):
+        print(f"Starting game between {self.player1.player_id} and {self.player2.player_id}")
+        # Game logic goes here
+
+
+        print(f"Game between {self.player1.player_id} and {self.player2.player_id} finished")
+
+        winner = self.player1.player_id
+        loser = self.player2.player_id
+        return [winner, loser]
+
+
+# Matchmaking function
+def find_match(player):
+    # If there are no waiting players, add the current player to the waiting list
+    if not waiting_players:
+        waiting_players.append(player)
+        return False  # No match found yet
+
+    # Remove the opponent from the waiting list
+    try:
+        opponent = waiting_players.pop(0)
+        return opponent
+
+    except IndexError as error:
+        return False  # No match found yet
+
+
+# Thread function for processing matchmaking requests matched_player
+def matchmaking_thread():
+    while True:
+        player = matchmaking_queue.get()
+        with matchmaking_lock:
+            opponent = find_match(player)
+            if opponent:
+                print(f"Match found: {player.player_id} vs {opponent.player_id}")
+                # Start a new thread for the game instance
+                game_thread = threading.Thread(target=start_game_instance, args=(player, opponent))
+                game_thread.start()
+            else:
+                print("Waiting for other players to join...")
+        matchmaking_queue.task_done()
+
+
+# Function to start a game instance between two players
+def start_game_instance(player1, player2):
+    game = GameInstance(player1, player2)
+    result = game.start_game()
+    # These should be carried to the database
+    print(f"{result[0]} + won and  + {result[1]} + lost.")
+
+
+# Function to hash a password
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password, salt
 
 
 @app.route("/")
@@ -124,7 +209,7 @@ def user():
             return redirect(url_for('login'))
 
     if request.method == "POST":
-        ship_lengths = [4, 3, 5, 2]
+        ship_lengths = [5, 4, 3, 2, 1]
         if request.form['startsetup'] == "start":
             return render_template("gamesetup.html", user=userid, ships=ship_lengths)
         # TODO START GAME
@@ -135,6 +220,19 @@ def user():
 def game():
     if request.method == "GET":
         return render_template("game.html")
+
+
+# Matchmaking route
+@app.route('/matchmaking', methods=['POST'])
+def matchmaking():
+    player_data = request.json
+    player_id = player_data.get('player_id')
+    # Player board in list format
+    player_board = player_data.get('player_board')
+    player = Player(player_id, player_board)
+    matchmaking_queue.put(player)
+    matchmaking_queue.join()
+    return jsonify({'message': 'Matchmaking request received'})
 
 
 @app.route('/cell_click', methods=['POST'])
@@ -167,13 +265,17 @@ def handle_click():
         return jsonify({'message': 'Error'})
 
 
-
-# Function to hash a password
-def hash_password(password):
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_password, salt
-
-
 if __name__ == '__main__':
     app.run(debug=True)
+    # Start matchmaking thread
+    matchmaking_thread = threading.Thread(target=matchmaking_thread)
+    matchmaking_thread.daemon = True
+    matchmaking_thread.start()
+
+    # Simulate players joining the matchmaking queue
+    for i in range(5):
+        print("Creating player")
+        player = Player(player_id=i, player_board=[i])
+        matchmaking_queue.put(player)
+    
+    matchmaking_queue.join()
