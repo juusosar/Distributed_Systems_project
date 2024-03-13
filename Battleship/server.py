@@ -35,11 +35,10 @@ class GameInstance:
     def __init__(self, player1, player2):
         self.player1 = player1
         self.player2 = player2
-    
+
     def start_game(self):
         print(f"Starting game between {self.player1.player_id} and {self.player2.player_id}")
         # Game logic goes here
-
 
         print(f"Game between {self.player1.player_id} and {self.player2.player_id} finished")
 
@@ -218,8 +217,13 @@ def user():
 
 @app.route("/game", methods=["GET"])
 def game():
+    userid = request.cookies.get("userid")
     if request.method == "GET":
-        return render_template("game.html")
+        print("QUEUING")
+        matchmaking_queue.put(Player(userid, session['ships']))
+        print("JOINING")
+        matchmaking_queue.join()
+        return render_template("game.html", user=userid, ships=session['ships'])
 
 
 # Matchmaking route
@@ -244,7 +248,7 @@ def handle_click():
         col = data['col']
         direction = data['orientation']
         length = data['length']
-        #state = data['state']
+        # state = data['state']
 
         session['ships'].append({
             'col': col,
@@ -271,11 +275,3 @@ if __name__ == '__main__':
     matchmaking_thread = threading.Thread(target=matchmaking_thread)
     matchmaking_thread.daemon = True
     matchmaking_thread.start()
-
-    # Simulate players joining the matchmaking queue
-    for i in range(5):
-        print("Creating player")
-        player = Player(player_id=i, player_board=[i])
-        matchmaking_queue.put(player)
-    
-    matchmaking_queue.join()
