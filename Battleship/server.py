@@ -212,8 +212,8 @@ def user():
         ship_lengths = [5, 4, 3, 2, 1]
         if request.form['startsetup'] == "start":
             return render_template("gamesetup.html", user=userid, ships=ship_lengths)
-        # TODO START GAME
-        return render_template("game.html")
+        if request.form['startsetup'] == "find":
+            return render_template("game.html", user=userid, ships=session['ships'])
 
 
 @app.route("/game", methods=["GET"])

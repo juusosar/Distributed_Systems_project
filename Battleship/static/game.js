@@ -49,7 +49,7 @@ function sendClickRequest(data) {
                 let shiptext = document.getElementById("shiptext")
                 shiptext.innerHTML =
                     "<h3 id='shiptext'>All ships placed! Press start game to start looking for an opponent.</h3>"
-                document.getElementById("start-button").removeAttribute("hidden")
+                document.getElementById("startsetup").removeAttribute("hidden")
             }
         } else {
             // Handle error response
