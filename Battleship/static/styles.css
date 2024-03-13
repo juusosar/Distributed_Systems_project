@@ -108,6 +108,13 @@ footer {
     margin-right: 50px;
 }
 
+.own-cell {
+    background-color: lightgrey;
+    border: 1px solid black;
+    cursor: pointer;
+    margin: 2px;
+}
+
 .cell {
     background-color: lightgrey;
     border: 1px solid black;

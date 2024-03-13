@@ -8,7 +8,8 @@ import queue
 import time
 
 app = Flask(__name__, static_url_path='/static')
-session = {'ships': []}
+session = {'ships': [],
+           'ship_indexes': []}
 
 db = Database('database.db')
 
@@ -202,6 +203,7 @@ def register():
 def user():
     userid = request.cookies.get("userid")
     if request.method == "GET":
+        session['ships'], session['ship_indexes'] = {}, []
         if userid:
             return render_template("user.html", user=userid)
         else:
@@ -211,19 +213,19 @@ def user():
         ship_lengths = [5, 4, 3, 2, 1]
         if request.form['startsetup'] == "start":
             return render_template("gamesetup.html", user=userid, ships=ship_lengths)
-        if request.form['startsetup'] == "find":
-            return render_template("game.html", user=userid, ships=session['ships'])
+
 
 
 @app.route("/game", methods=["GET"])
 def game():
     userid = request.cookies.get("userid")
     if request.method == "GET":
-        print("QUEUING")
-        matchmaking_queue.put(Player(userid, session['ships']))
-        print("JOINING")
-        matchmaking_queue.join()
-        return render_template("game.html", user=userid, ships=session['ships'])
+        #print("QUEUING")
+        #matchmaking_queue.put(Player(userid, session['ships']))
+        #print("JOINING")
+        #matchmaking_queue.join()
+        print(session['ship_indexes'])
+        return render_template("game.html", user=userid, ships=session['ship_indexes'])
 
 
 # Matchmaking route
@@ -251,11 +253,15 @@ def handle_click():
         # state = data['state']
 
         session['ships'].append({
-            'col': col,
             'row': row,
+            'col': col,
             'direction': direction,
             'length': length
         })
+
+        for ship in data['ship_indexes']:
+            if ship not in session['ship_indexes']:
+                session['ship_indexes'].append(ship)
 
         print(col, row, player)
         # Perform server-side logic here

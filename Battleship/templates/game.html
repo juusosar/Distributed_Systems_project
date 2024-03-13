@@ -15,18 +15,22 @@
 
     <div class="grid-container">
         <!-- Game grid for player1 board -->
-        <div class="grid" id="grid-player">
+        <div class="grid" id="grid-op">
         {% for row in range(10) %}
             {% for col in range(10) %}
-                <div class="cell" id="p1-cell-{{ row }}-{{ col }}" onclick="handleShoot({{ row }}, {{ col }})"></div>
+                <div class="cell" id="op-cell-{{ row }}-{{ col }}" onclick="handleShoot({{ row }}, {{ col }})"></div>
             {% endfor %}
         {% endfor %}
         </div>
         <!-- Game grid for player2 board -->
-        <div class="grid" id="grid-op">
+        <div class="grid" id="grid-own">
         {% for row in range(10) %}
             {% for col in range(10) %}
-                <div class="cell" id="p2-cell-{{ row }}-{{ col }}"></div>
+                {% if [row, col] in ships %}
+                    <div class="own-cell" id="own-cell-{{ row }}-{{ col }}" style="background-color: grey"></div>
+                {% else %}
+                    <div class="own-cell" id="own-cell-{{ row }}-{{ col }}"></div>
+                {% endif %}
             {% endfor %}
         {% endfor %}
         </div>

@@ -1,4 +1,5 @@
-let ships = []
+let ships = [];
+
 function handleCellClickSetup(row, col) {
     let cell = document.getElementById('cell-' + row + '-' + col);
     let orientation = document.querySelector('input[name="orientation"]:checked')
@@ -28,6 +29,7 @@ function handleCellClickSetup(row, col) {
                 }
             }
             message.setAttribute("hidden", "")
+            ships.push([(row), col])
             for (let i = 1; i < length; i++) {
                 temp = document.getElementById('cell-' + (row+i) + '-' + col)
                 temp.style.backgroundColor = 'grey'
@@ -49,6 +51,7 @@ function handleCellClickSetup(row, col) {
                 }
             }
             message.setAttribute("hidden", "")
+            ships.push([(row), col])
             for (let i = 1; i < length; i++) {
                 temp = document.getElementById('cell-' + row + '-' + (col+i))
                 temp.style.backgroundColor = 'grey'
@@ -60,10 +63,14 @@ function handleCellClickSetup(row, col) {
     let data = {'col': col,
             'row': row,
             'orientation': orientation['id'],
-            'length': length
+            'length': length,
+            'ship_indexes': ships
     }
 
     sendClickRequest(data);
+
+
+
 }
 
 function handleShoot(row, col) {
