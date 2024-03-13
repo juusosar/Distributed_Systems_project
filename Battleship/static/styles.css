@@ -117,3 +117,7 @@ footer {
 .cell:hover {
     background-color: grey;
 }
+
+.invalidtext {
+    color: red;
+}

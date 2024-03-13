@@ -22,7 +22,7 @@
     <div class="setup">
 
         <h3 id="shiptext">Place ship of length <span id="shiplength"><u>5</u></span></h3>
-        <br>
+        <h4 id="invalid" hidden>Invalid placement!</h4>
         <p>Ship orientation: </p>
         <label><input type="radio" name="orientation" id="h" checked>Horizontal</label>
         <label><input type="radio" name="orientation" id="v">Vertical</label>
@@ -35,7 +35,7 @@
             Vertically it is placed <b>downwards</b> from the clicked cell.
         </p>
         <!-- Button to start/restart the game -->
-        <form action = "/user" method="post">
+        <form action = "/game" method="get">
             <button id="startsetup" name="startsetup" type="submit" value="find" hidden> Find Game</button>
         </form>
 
