@@ -16,8 +16,6 @@ function handleCellClickSetup(row, col) {
     }
     else cell.style.backgroundColor = 'grey'
 
-    // FIXME: Laivoja pystyy laittamaan päällekkäin, ei toimi arrayden tsekkaus MIKSI
-    
     switch(orientation['id']) {
         
         case 'v':
@@ -54,8 +52,6 @@ function handleCellClickSetup(row, col) {
             }
             for (let i = 0; i < length; i++) {
                 for (let j = 0; j < ships.length; j++) {
-                    
-                    
 
                     if (ships[j][0] === (row) && ships[j][1] === (col + i)) {
                         message.removeAttribute("hidden")
@@ -82,9 +78,6 @@ function handleCellClickSetup(row, col) {
     }
 
     sendClickRequest(data);
-
-
-
 }
 
 function handleShoot(row, col) {
