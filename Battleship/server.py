@@ -40,19 +40,30 @@ class GameInstance:
 def start_game(player1, player2):
     print(f"Starting game between {player1.player_id} and {player2.player_id}")
     
-    time.sleep(120)
+    
     #loop käynnissä kunnnes jomman kumman lista tyhjä
     #jos removaa listasta saa uuden vuoron 
     #muuten player 2 vuoro
-    #jos lista tyhjä peli päättyy
+    #jos lista tyhjä peli päättyy 
+
+    while True:
+        losers = []
+        for item in session["ship_indexes"]:
+            if item[2] not in losers:
+                losers.append(item[2]) 
+        
+        if player1.player_id not in losers:
+            print("winner", player2.player_id)
+            return [player1.player_id, player2.player_id]
+        
+        if player2.player_id not in losers:
+            print("winner", player1.player_id)
+            return [player2.player_id, player1.player_id]
+               
 
 
 
-    print(f"Game between {player1.player_id} and {player2.player_id} finished")
-
-    winner = player1.player_id
-    loser = player2.player_id
-    return [winner, loser]
+    
 
 
 # Matchmaking function
@@ -279,6 +290,21 @@ def handle_shoot():
         player = request.cookies.get('userid')
         row = data['row']
         col = data['col']
+        
+
+        for item in session['ship_indexes']:
+            if (item[0] == row and item[1] == col and item[2] != player):
+                index = session['ship_indexes'].index(item)
+                print(item)
+                session['ship_indexes'].remove(item)
+                
+        print(session['ship_indexes'])
+
+
+            
+
+
+
 
         print(col, row, player)
         # Perform server-side logic here
