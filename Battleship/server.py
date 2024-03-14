@@ -37,22 +37,50 @@ class GameInstance:
         self.player1 = player1
         self.player2 = player2
 
-def start_game(player1, player2):
-    print(f"Starting game between {player1.player_id} and {player2.player_id}")
-    
-    time.sleep(120)
-    #loop käynnissä kunnnes jomman kumman lista tyhjä
-    #jos removaa listasta saa uuden vuoron 
-    #muuten player 2 vuoro
-    #jos lista tyhjä peli päättyy
+def start_game(challenger1, challenger2):
+    player1 = challenger1.player_id
+    player2 = challenger2.player_id
 
+    player1_tag = player1 + "tag"
+    player2_tag = player2 + "tag"
+    session[f'{player1_tag}'] = [2]
+    session[f'{player2_tag}'] = [2]
 
+    print(f"Starting game between {player1} and {player2}")
 
-    print(f"Game between {player1.player_id} and {player2.player_id} finished")
+    player1_hits = 0
+    player2_hits = 0
+    hitpoints = 15
+    player1_ships = session[f'{player1}']
+    player2_ships = session[f'{player2}']
 
-    winner = player1.player_id
-    loser = player2.player_id
-    return [winner, loser]
+    while player1_hits < hitpoints and player2_hits < hitpoints:
+
+        player1_shoot = session[f'{player1_tag}'] # Shoot event
+
+        for i in range(len(player2_ships)):
+            if player2_ships[i] == player1_shoot:
+                player1_hits += 1
+                player2_ships.pop(i)
+                break
+        
+        player2_shoot = session[f'{player2_tag}'] # Shoot event
+
+        for i in range(len(player1_ships)):
+            if player1_ships[i] == player2_shoot:
+                player2_hits += 1
+                player1_ships.pop(i)
+                break
+        
+    session[f'{player1}'] = []
+    session[f'{player2}'] = []
+
+    if player1_hits == hitpoints:
+        print(f"{player1} won {player2}")
+        return [player1, player2]
+    else:
+        print(f"{player2} won {player1}")
+        return [player2, player1]
 
 
 # Matchmaking function
@@ -84,10 +112,6 @@ def matchmaking(queue):
         else:
             time.sleep(1)
    
-    
-    
-       
-       
 
 # Function to start a game instance between two players
 def start_game_instance(player1, player2):
@@ -150,7 +174,12 @@ def login():
 
 @app.route('/logout')
 def logout():
+    userid = request.cookies.get("userid")
     session['loggedin'] = False
+    if f'{userid}' not in session:
+            pass
+    else:
+        session.pop(f'{userid}')
     session.pop('userid', None)
     res = make_response(render_template('login.html'), )
     res.set_cookie('userid', max_age=0)
@@ -212,7 +241,6 @@ def register():
 def user():
     userid = request.cookies.get("userid")
     if request.method == "GET":
-        session['ships'], session['ship_indexes'] = {}, []
         if userid:
             return render_template("user.html", user=userid)
         else:
@@ -230,11 +258,11 @@ def game():
     userid = request.cookies.get("userid")
     if request.method == "GET":
         print("QUEUING", userid)
-        player1 = Player(userid, session['ship_indexes'])
+        player1 = Player(userid, session[f'{userid}'])
         matchmaking_queue.put(player1)
         print("JOINING", userid)
-        print("ships", session['ship_indexes'])
-        return render_template("game.html", user=userid, ships=session['ship_indexes'])
+        print(session[f'{userid}'])
+        return render_template("game.html", user=userid, ships=session[f'{userid}'])
 
 
 
@@ -256,9 +284,14 @@ def handle_click():
             'length': length
         })
 
+        if f'{player}' not in session:
+            session[f'{player}'] = []
+        else:
+            print("Dictionary already has key : Hence value is not overwritten ")
+
         for ship in data['ship_indexes']:
-            if ship not in session['ship_indexes']:
-                session['ship_indexes'].append(ship)
+            if ship not in session[f'{player}']:
+                session[f'{player}'].append(ship)
 
         print(col, row, player)
         # Perform server-side logic here
@@ -277,10 +310,13 @@ def handle_shoot():
     try:
         data = request.json
         player = request.cookies.get('userid')
+        tag = player + "tag"
         row = data['row']
         col = data['col']
 
-        print(col, row, player)
+        session[f'{tag}'] = [row,col]
+
+        print(player, row, col)
         # Perform server-side logic here
 
         return jsonify({'message': 'Cell clicked successfully',
