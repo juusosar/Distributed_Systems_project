@@ -37,22 +37,22 @@ class GameInstance:
         self.player1 = player1
         self.player2 = player2
 
-    def start_game(self, player1, player2):
-        print(f"Starting game between {self.player1.player_id} and {self.player2.player_id}")
-        
+def start_game(player1, player2):
+    print(f"Starting game between {player1.player_id} and {player2.player_id}")
+    
+    time.sleep(120)
+    #loop käynnissä kunnnes jomman kumman lista tyhjä
+    #jos removaa listasta saa uuden vuoron 
+    #muuten player 2 vuoro
+    #jos lista tyhjä peli päättyy
 
-        #loop käynnissä kunnnes jomman kumman lista tyhjä
-        #jos removaa listasta saa uuden vuoron 
-        #muuten player 2 vuoro
-        #jos lista tyhjä peli päättyy
 
 
+    print(f"Game between {player1.player_id} and {player2.player_id} finished")
 
-        print(f"Game between {self.player1.player_id} and {self.player2.player_id} finished")
-
-        winner = self.player1.player_id
-        loser = self.player2.player_id
-        return [winner, loser]
+    winner = player1.player_id
+    loser = player2.player_id
+    return [winner, loser]
 
 
 # Matchmaking function
@@ -72,25 +72,27 @@ def find_match(player):
 
 
 # Thread function for processing matchmaking requests matched_player
-def matchmaking_thread():
+def matchmaking(queue):
     while True:
-        player = matchmaking_queue.get()
-        with matchmaking_lock:
-            opponent = find_match(player)
-            if opponent:
-                print(f"Match found: {player.player_id} vs {opponent.player_id}")
-                # Start a new thread for the game instance
-                game_thread = threading.Thread(target=start_game_instance, args=(player, opponent))
-                game_thread.start()
-            else:
-                print("Waiting for other players to join...")
-        matchmaking_queue.task_done()
-
+        if queue.qsize() >= 2:
+            print("match found")
+            player1 = queue.get()
+            player2 = queue.get()
+            game_thread = threading.Thread(target=start_game, args=(player1, player2))
+            game_thread.start()
+            
+        else:
+            time.sleep(1)
+   
+    
+    
+       
+       
 
 # Function to start a game instance between two players
 def start_game_instance(player1, player2):
-    
-    result = game.start_game(player1, player2)
+    game = GameInstance(player1, player2)
+    result = game.start_game()
     # These should be carried to the database
     print(f"{result[0]} + won and  + {result[1]} + lost.")
 
@@ -229,9 +231,7 @@ def game():
     if request.method == "GET":
         print("QUEUING", userid)
         player1 = Player(userid, session['ship_indexes'])
-        player2 = Player("juuso", session['ship_indexes'])
         matchmaking_queue.put(player1)
-        matchmaking_queue.put(player2)
         print("JOINING", userid)
         print("ships", session['ship_indexes'])
         return render_template("game.html", user=userid, ships=session['ship_indexes'])
@@ -293,8 +293,10 @@ def handle_shoot():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    # Start matchmaking thread
-    matchmaking_thread = threading.Thread(target=matchmaking_thread)
-    matchmaking_thread.daemon = True
+    print("START")
+    matchmaking_thread = threading.Thread(target=matchmaking, args=(matchmaking_queue,))
     matchmaking_thread.start()
+    app.run(debug=True)
+    
+    matchmaking_thread.join()
+   
