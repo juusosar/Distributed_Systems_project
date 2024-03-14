@@ -78,6 +78,7 @@ def matchmaking_thread():
             else:
                 print("Waiting for other players to join...")
         matchmaking_queue.task_done()
+        print("done")
 
 
 # Function to start a game instance between two players
@@ -220,25 +221,14 @@ def user():
 def game():
     userid = request.cookies.get("userid")
     if request.method == "GET":
-        #print("QUEUING")
-        #matchmaking_queue.put(Player(userid, session['ships']))
-        #print("JOINING")
-        #matchmaking_queue.join()
+        print("QUEUING")
+        player = Player(userid, session['ships'])
+        matchmaking_queue.put(player)
+        player2 = Player("tauski", [0,0,0,0])
+        matchmaking_queue.put(player2)
+        print("JOINING")
         print(session['ship_indexes'])
         return render_template("game.html", user=userid, ships=session['ship_indexes'])
-
-
-# Matchmaking route
-@app.route('/matchmaking', methods=['POST'])
-def matchmaking():
-    player_data = request.json
-    player_id = player_data.get('player_id')
-    # Player board in list format
-    player_board = player_data.get('player_board')
-    player = Player(player_id, player_board)
-    matchmaking_queue.put(player)
-    matchmaking_queue.join()
-    return jsonify({'message': 'Matchmaking request received'})
 
 
 @app.route('/cell_click', methods=['POST'])
