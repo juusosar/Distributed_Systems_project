@@ -5,7 +5,8 @@ function handleCellClickSetup(row, col) {
     let orientation = document.querySelector('input[name="orientation"]:checked')
     let length
     let temp
-    let message = document.getElementById("invalid")    
+    let message = document.getElementById("invalid")
+    let userid = document.cookie.split('=')[1]
 
     if (parseInt(document.getElementById("shiplength").textContent) === null) return
     else length = parseInt(document.getElementById("shiplength").textContent)
@@ -35,11 +36,11 @@ function handleCellClickSetup(row, col) {
                 }
             }
             message.setAttribute("hidden", "")
-            ships.push([(row), col])
+            ships.push([(row), col, userid])
             for (let i = 1; i < length; i++) {
                 temp = document.getElementById('cell-' + (row+i) + '-' + col)
                 temp.style.backgroundColor = 'grey'
-                ships.push([(row+i), col])
+                ships.push([(row+i), col, userid])
             }
             break
         case 'h':
@@ -59,14 +60,15 @@ function handleCellClickSetup(row, col) {
                 }
             }
             message.setAttribute("hidden", "")
-            ships.push([(row), col])
+            ships.push([(row), col, userid])
             for (let i = 1; i < length; i++) {
                 temp = document.getElementById('cell-' + row + '-' + (col+i))
                 temp.style.backgroundColor = 'grey'
-                ships.push([row, (col+i)])
+                ships.push([row, (col+i), userid])
             }
             break
     }
+    console.log(ships)
 
     let data = {'col': col,
             'row': row,

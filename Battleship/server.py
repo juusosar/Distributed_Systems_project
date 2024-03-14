@@ -8,8 +8,7 @@ import queue
 import time
 
 app = Flask(__name__, static_url_path='/static')
-session = {'ships': [],
-           'ship_indexes': []}
+session = {'user': {}}
 
 db = Database('database.db')
 
@@ -39,14 +38,11 @@ class GameInstance:
 
     def start_game(self, player1, player2):
         print(f"Starting game between {self.player1.player_id} and {self.player2.player_id}")
-        
 
-        #loop käynnissä kunnnes jomman kumman lista tyhjä
-        #jos removaa listasta saa uuden vuoron 
-        #muuten player 2 vuoro
-        #jos lista tyhjä peli päättyy
-
-
+        # loop käynnissä kunnnes jomman kumman lista tyhjä
+        # jos removaa listasta saa uuden vuoron
+        # muuten player 2 vuoro
+        # jos lista tyhjä peli päättyy
 
         print(f"Game between {self.player1.player_id} and {self.player2.player_id} finished")
 
@@ -89,7 +85,6 @@ def matchmaking_thread():
 
 # Function to start a game instance between two players
 def start_game_instance(player1, player2):
-    
     result = game.start_game(player1, player2)
     # These should be carried to the database
     print(f"{result[0]} + won and  + {result[1]} + lost.")
@@ -119,23 +114,25 @@ def login():
 
                 if db.verify_user(username, password):
                     message = 'Logged in successfully !'
-                    session['loggedin'] = True
+                    session['user'] = {f'{username}': {}}
+                    session['user'][username]['loggedin'] = True
+                    print(session)
                 else:
                     message = 'Invalid username or password.'
-                    session['loggedin'] = False
+                    session['user'][username]['loggedin'] = False
 
-                session['userid'] = username
+                session['user'][username]['userid'] = username
 
             except sqlite3.Error as error:
                 message = 'Something went wrong !'
-                session['loggedin'] = False
+                session['user'][username]['loggedin'] = False
 
             finally:
                 db.close()
 
-            if session["loggedin"]:
-                response = make_response(render_template('user.html', user=session["userid"]))
-                response.set_cookie('userid', session["userid"])
+            if session['user'][username]["loggedin"]:
+                response = make_response(render_template('user.html', user=session['user'][username]["userid"]))
+                response.set_cookie('userid', session['user'][username]["userid"])
                 response.headers["location"] = url_for('user')
                 return response
             else:
@@ -148,8 +145,10 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session['loggedin'] = False
-    session.pop('userid', None)
+    print(session)
+    userid = request.cookies.get('userid')
+    session['user'][userid]['loggedin'] = False
+    session.pop(userid, None)
     res = make_response(render_template('login.html'), )
     res.set_cookie('userid', max_age=0)
     return res
@@ -208,9 +207,11 @@ def register():
 
 @app.route("/user", methods=["GET", "POST"])
 def user():
+    print(session)
     userid = request.cookies.get("userid")
+    player = session['user'][userid]
     if request.method == "GET":
-        session['ships'], session['ship_indexes'] = {}, []
+        player['ships'], player['ship_indexes'] = [], []
         if userid:
             return render_template("user.html", user=userid)
         else:
@@ -222,34 +223,35 @@ def user():
             return render_template("gamesetup.html", user=userid, ships=ship_lengths)
 
 
-
 @app.route("/game", methods=["GET"])
 def game():
+    print(session)
     userid = request.cookies.get("userid")
+    player = session['user'][userid]
     if request.method == "GET":
         print("QUEUING", userid)
-        player1 = Player(userid, session['ship_indexes'])
-        player2 = Player("juuso", session['ship_indexes'])
+        player1 = Player(userid, player['ship_indexes'])
+        player2 = Player("juuso", player['ship_indexes'])
         matchmaking_queue.put(player1)
         matchmaking_queue.put(player2)
         print("JOINING", userid)
-        print("ships", session['ship_indexes'])
+        print("ships", player['ship_indexes'])
         return render_template("game.html", user=userid, ships=session['ship_indexes'])
-
 
 
 @app.route('/cell_click', methods=['POST'])
 def handle_click():
     try:
         data = request.json
-        player = request.cookies.get('userid')
+        userid = request.cookies.get('userid')
+        player = session['user'][userid]
         row = data['row']
         col = data['col']
         direction = data['orientation']
         length = data['length']
         # state = data['state']
 
-        session['ships'].append({
+        player['ships'].append({
             'row': row,
             'col': col,
             'direction': direction,
@@ -257,8 +259,8 @@ def handle_click():
         })
 
         for ship in data['ship_indexes']:
-            if ship not in session['ship_indexes']:
-                session['ship_indexes'].append(ship)
+            if ship not in player['ship_indexes']:
+                player['ship_indexes'].append(ship)
 
         print(col, row, player)
         # Perform server-side logic here
@@ -270,7 +272,7 @@ def handle_click():
     except Exception as e:
         print(e)
         return jsonify({'message': 'Error'})
-    
+
 
 @app.route('/shoot', methods=['POST'])
 def handle_shoot():
