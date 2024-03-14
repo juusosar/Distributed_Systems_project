@@ -26,8 +26,7 @@ function handleCellClickSetup(row, col) {
                 return
             }
             for (let i = 0; i < length; i++) {
-                for (let j = 0; j < ships.length; j++) {
-                    
+                for (let j = 0; j < ships.length; j++) { 
                     if (ships[j][0] === (row + i) && ships[j][1] === (col)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
@@ -52,7 +51,6 @@ function handleCellClickSetup(row, col) {
             }
             for (let i = 0; i < length; i++) {
                 for (let j = 0; j < ships.length; j++) {
-
                     if (ships[j][0] === (row) && ships[j][1] === (col + i)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
@@ -83,9 +81,10 @@ function handleCellClickSetup(row, col) {
 function handleShoot(row, col) {
     let cell = document.getElementById('cell-' + row + '-' + col);
 
-    if (cell.style.backgroundColor === 'grey')
-        cell.style.backgroundColor = 'lightgrey'
-    else cell.style.backgroundColor = 'grey'
+    let data = {'col': col,
+            'row': row
+    }
+    sendShootRequest(data);
 }
 
 function sendClickRequest(data) {
@@ -106,6 +105,27 @@ function sendClickRequest(data) {
                     "<h3 id='shiptext'>All ships placed!\n Press 'Find Game' to start looking for an opponent.</h3>"
                 document.getElementById("startsetup").removeAttribute("hidden")
             }
+        } else {
+            // Handle error response
+            console.log(response)
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+function sendShootRequest(data) {
+    // Send AJAX request to Flask server
+    fetch('/shoot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if (response.ok) {
+            console.log(response.json())
         } else {
             // Handle error response
             console.log(response)

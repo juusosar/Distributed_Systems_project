@@ -37,9 +37,16 @@ class GameInstance:
         self.player1 = player1
         self.player2 = player2
 
-    def start_game(self):
+    def start_game(self, player1, player2):
         print(f"Starting game between {self.player1.player_id} and {self.player2.player_id}")
-        # Game logic goes here
+        
+
+        #loop käynnissä kunnnes jomman kumman lista tyhjä
+        #jos removaa listasta saa uuden vuoron 
+        #muuten player 2 vuoro
+        #jos lista tyhjä peli päättyy
+
+
 
         print(f"Game between {self.player1.player_id} and {self.player2.player_id} finished")
 
@@ -78,13 +85,12 @@ def matchmaking_thread():
             else:
                 print("Waiting for other players to join...")
         matchmaking_queue.task_done()
-        print("done")
 
 
 # Function to start a game instance between two players
 def start_game_instance(player1, player2):
-    game = GameInstance(player1, player2)
-    result = game.start_game()
+    
+    result = game.start_game(player1, player2)
     # These should be carried to the database
     print(f"{result[0]} + won and  + {result[1]} + lost.")
 
@@ -221,14 +227,15 @@ def user():
 def game():
     userid = request.cookies.get("userid")
     if request.method == "GET":
-        print("QUEUING")
-        player = Player(userid, session['ships'])
-        matchmaking_queue.put(player)
-        player2 = Player("tauski", [0,0,0,0])
+        print("QUEUING", userid)
+        player1 = Player(userid, session['ship_indexes'])
+        player2 = Player("juuso", session['ship_indexes'])
+        matchmaking_queue.put(player1)
         matchmaking_queue.put(player2)
-        print("JOINING")
-        print(session['ship_indexes'])
+        print("JOINING", userid)
+        print("ships", session['ship_indexes'])
         return render_template("game.html", user=userid, ships=session['ship_indexes'])
+
 
 
 @app.route('/cell_click', methods=['POST'])
@@ -252,6 +259,26 @@ def handle_click():
         for ship in data['ship_indexes']:
             if ship not in session['ship_indexes']:
                 session['ship_indexes'].append(ship)
+
+        print(col, row, player)
+        # Perform server-side logic here
+
+        return jsonify({'message': 'Cell clicked successfully',
+                        'col': col,
+                        'row': row})
+
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'Error'})
+    
+
+@app.route('/shoot', methods=['POST'])
+def handle_shoot():
+    try:
+        data = request.json
+        player = request.cookies.get('userid')
+        row = data['row']
+        col = data['col']
 
         print(col, row, player)
         # Perform server-side logic here
