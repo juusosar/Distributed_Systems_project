@@ -21,11 +21,15 @@ function handleCellClickSetup(row, col) {
     switch(orientation['id']) {
         
         case 'v':
+            console.log(row, length)
+            if (row + length > 10){
+                message.removeAttribute("hidden")
+                cell.style.backgroundColor = "lightgrey"
+                return
+            }
             for (let i = 0; i < length; i++) {
                 for (let j = 0; j < ships.length; j++) {
-                    console.log(ships)
-                    console.log("ship[j]" + ships[j])
-                    console.log((row + i), (col))
+                    
                     if (ships[j][0] === (row + i) && ships[j][1] === (col)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
@@ -42,13 +46,20 @@ function handleCellClickSetup(row, col) {
             }
             break
         case 'h':
-            console.log("ships:" + ships)
+            console.log(col, length)
+            if (col + length > 10){
+                message.removeAttribute("hidden")
+                cell.style.backgroundColor = "lightgrey"
+                return
+            }
             for (let i = 0; i < length; i++) {
                 for (let j = 0; j < ships.length; j++) {
+                    
+                    
+
                     if (ships[j][0] === (row) && ships[j][1] === (col + i)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
-                        console.log("made it")
                         return
                     }
                 }
