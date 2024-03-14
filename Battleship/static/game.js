@@ -5,7 +5,7 @@ function handleCellClickSetup(row, col) {
     let orientation = document.querySelector('input[name="orientation"]:checked')
     let length
     let temp
-    let message = document.getElementById("invalid")
+    let message = document.getElementById("invalid")    
 
     if (parseInt(document.getElementById("shiplength").textContent) === null) return
     else length = parseInt(document.getElementById("shiplength").textContent)
@@ -17,11 +17,16 @@ function handleCellClickSetup(row, col) {
     else cell.style.backgroundColor = 'grey'
 
     // FIXME: Laivoja pystyy laittamaan päällekkäin, ei toimi arrayden tsekkaus MIKSI
+    
     switch(orientation['id']) {
+        
         case 'v':
-            for (let i = 1; i < length; i++) {
-                for (let j = 1; j < ships.length; j++) {
-                    if (ships[j] === Array((row + i), (col))) {
+            for (let i = 0; i < length; i++) {
+                for (let j = 0; j < ships.length; j++) {
+                    console.log(ships)
+                    console.log("ship[j]" + ships[j])
+                    console.log((row + i), (col))
+                    if (ships[j][0] === (row + i) && ships[j][1] === (col)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
                         return
@@ -37,12 +42,10 @@ function handleCellClickSetup(row, col) {
             }
             break
         case 'h':
-            for (let i = 1; i < length; i++) {
-                console.log(Array(row, (col+i)))
-                console.log(Array(row, (col+i)) in ships)
-                console.log(ships)
-                for (let j = 1; j < ships.length; j++) {
-                    if (ships[j].value === Array(row, (col+i))) {
+            console.log("ships:" + ships)
+            for (let i = 0; i < length; i++) {
+                for (let j = 0; j < ships.length; j++) {
+                    if (ships[j][0] === (row) && ships[j][1] === (col + i)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
                         console.log("made it")
