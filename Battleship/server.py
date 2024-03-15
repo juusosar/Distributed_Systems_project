@@ -9,7 +9,8 @@ import time
 
 app = Flask(__name__, static_url_path='/static')
 session = {'ships': [],
-           'ship_indexes': []}
+           'ship_indexes': [],
+           'game_number': 0}
 
 db = Database('database.db')
 
@@ -28,13 +29,6 @@ class Player:
         self.player_id = player_id
         self.player_board = player_board
 
-
-# Define a class to represent a game instance
-# This class could be moved to another file with the game logic (battleships.py)
-class GameInstance:
-    def __init__(self, player1, player2):
-        self.player1 = player1
-        self.player2 = player2
 
 def start_game(challenger1, challenger2):
     player1 = challenger1.player_id
@@ -132,10 +126,22 @@ def start_game(challenger1, challenger2):
     # Check who won
     if player1_hits == hitpoints:
         print(f"{player1} won {player2}")
-        return [player1, player2]
+        result = [player1, player2]
     else:
         print(f"{player2} won {player1}")
-        return [player2, player1]
+        result = [player2, player1]
+    
+    # Log the result of the game to the database
+    try:
+        db.connect()
+        db.update_game_stats(result[0], "w")
+        db.update_game_stats(result[1], "l")
+        db.connection.commit()
+    except sqlite3.Error as error:
+        message = 'Something went wrong !'
+
+    finally:
+        db.close()
 
 
 # Matchmaking function
@@ -161,19 +167,11 @@ def matchmaking(queue):
             print("Match found")
             player1 = queue.get()
             player2 = queue.get()
-            game_thread = threading.Thread(target=start_game, args=(player1, player2))
+            game_thread = threading.Thread(target=start_game, args=(player1, player2)) # Game instance
             game_thread.start()
             
         else:
             time.sleep(1)
-   
-
-# Function to start a game instance between two players
-def start_game_instance(player1, player2):
-    game = GameInstance(player1, player2)
-    result = game.start_game()
-    # These should be carried to the database
-    print(f"{result[0]} + won and  + {result[1]} + lost.")
 
 
 # Function to hash a password
@@ -378,7 +376,6 @@ def handle_shoot():
         session[f'{tag}'] = [row,col]
 
         print(player, row, col)
-        # Perform server-side logic here
 
         return jsonify({'message': 'Cell clicked successfully',
                         'col': col,
