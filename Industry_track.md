@@ -80,11 +80,19 @@ This chapter will tell you about our solution how we created a online battleship
 
 1.1	Server
 
-The server have  multiple tasks to do, first when player is connecting to server user is asked to login or register depending on do they have already existing account. After registering or log in server we check from database is inside server that does user exist or credentials depending if user is registering or logging in. Database is implemented with sqlite3. Server also handles setting ships on board, shooting and game logic. When player is ready to play matchmaking thread set it to matchamaking queue, when queue has two people it will take first two out there and create a game thread for users.
+Upon connecting to the server, players are prompted to either log in with existing credentials or register for a new account. The server utilizes SQLite3 for database management, verifying the user's existence or validating their credentials against stored data.
+
+Furthermore, the server undertakes the responsibilities of managing gameplay elements such as ship placement, shooting, and game logic. When a player is prepared to engage in a match, a matchmaking thread enqueues them into a matchmaking queue. Once the queue accumulates two players, it dequeues the first two players and initiates a game thread for them to commence their match.
 
 1.2	Client
 
-In client node users have to give their credentials or registering in registering their desired credentials, after that clients send request to server if that are they authorizes and will sent back HTML file depending result of authorize. After logged in user is asked to create a board where user chooses first which way he want the first ship to be in board, then he chooses a coordination where ship will be, in here Javascript code will check if he can place the ship there. This will happen until all ships are placed, after that client send request to server that he is ready for game. When game is started user will click coordinates where he want to shoot, and it will send server that coordination.
+In the client-side application, users either provide their credentials to log in or register with their desired credentials. Upon submission, the client sends a request to the server for authorization. Based on the response from the server, the appropriate HTML file is returned to the client, reflecting the authorization status.
+
+Once authenticated, users proceed to create their game board. They start by selecting the orientation of their first ship on the board (horizontal or vertical). Then, they choose coordinates to place the ship. JavaScript code validates whether the selected coordinates are valid for ship placement. This process repeats until all ships are placed on the board.
+
+After completing the board setup, the client sends a request to the server indicating readiness to start the game.
+
+Once the game commences, users click on coordinates to target their opponent's ships. Each click triggers a request to the server with the chosen coordinates for processing. The server handles the attack, updating the game state accordingly, and sends the result back to the clients. This interactive gameplay continues until one player emerges victorious by sinking all opponent ships.
 
 
 ![Ajax](./.img/Architecture.jpg)
@@ -92,7 +100,7 @@ In client node users have to give their credentials or registering in registerin
 
 2 Scalability
 
-If there is a lot of users who are trying to login or register, we are aware of SQLite3's nonconcurrency so if we were to make the program more scalable, we would just switch to using MySQL, which supports concurrency operations. We chose SQLite3 for it's lightweight quality. For each game server will create a thread so this is not a problem if there are not too many threads so basically it depeds on hardware.
+If there is a lot of users who are trying to login or register, we are aware of SQLite3's nonconcurrency so if we were to make the program more scalable, we would just switch to using MySQL, which supports concurrency operations. We chose SQLite3 for it's lightweight quality. For each game server will create a thread so this is not a problem if there are not too many threads so basically it depends on hardware.
 
 
 
