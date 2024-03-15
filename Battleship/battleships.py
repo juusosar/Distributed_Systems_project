@@ -1,6 +1,9 @@
+""" This is a working implementation of Battleships, but local version playable from command line 
+This is not used in the working server implementation, but to act just as a proof of concept """
+
+
 import string
 import ship
-
 
 def create_board(n):
     """creates n x n sizes board"""
