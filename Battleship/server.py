@@ -15,7 +15,6 @@ db = Database('database.db')
 
 # Matchmaking queue and lock
 matchmaking_queue = queue.Queue()
-matchmaking_lock = threading.Lock()
 
 # List of players waiting for a match
 # This allows direct interaction with waiting players, such as notifying them of their 
@@ -41,40 +40,96 @@ def start_game(challenger1, challenger2):
     player1 = challenger1.player_id
     player2 = challenger2.player_id
 
+    # Making necessary variables and collecting the shoot event tag of the players
     player1_tag = player1 + "tag"
     player2_tag = player2 + "tag"
     session[f'{player1_tag}'] = [2]
     session[f'{player2_tag}'] = [2]
-
-    print(f"Starting game between {player1} and {player2}")
-
+    player1_lastshot = [2]
+    player2_lastshot = [2]
     player1_hits = 0
     player2_hits = 0
-    hitpoints = 15
+    hitpoints = 15 # When player hits get to 15, the game ends
+    hit = False
     player1_ships = session[f'{player1}']
     player2_ships = session[f'{player2}']
 
+    print(f"Starting game between {player1} and {player2}")
+
+    # Game loop
     while player1_hits < hitpoints and player2_hits < hitpoints:
 
-        player1_shoot = session[f'{player1_tag}'] # Shoot event
+        # Player 1's turn
+        print(f'{player1}s turn')
+        print(f'Last shot of {player1} was to {player1_lastshot}')
 
-        for i in range(len(player2_ships)):
-            if player2_ships[i] == player1_shoot:
-                player1_hits += 1
-                player2_ships.pop(i)
-                break
-        
-        player2_shoot = session[f'{player2_tag}'] # Shoot event
+        while player1_hits < hitpoints and player2_hits < hitpoints:
+            time.sleep(3)
+            player1_shoot = session[f'{player1_tag}'] # Collect shoot event of player 1
 
-        for i in range(len(player1_ships)):
-            if player1_ships[i] == player2_shoot:
-                player2_hits += 1
-                player1_ships.pop(i)
+            # Check if the player tries to shoot to the same coordinate as last time
+            if not all([a == b for a, b in zip(player1_shoot, player1_lastshot)]):
+                print(f'{player1} shoots to {player1_shoot}')
+
+                # Go through the other player's ship coordinates and if it hits act accordingly
+                for i in range(len(player2_ships)):
+                    if player2_ships[i] == player1_shoot:
+                        player1_hits += 1
+                        hit = True
+                        # Remove the hit coordinate from the other player's list
+                        player2_ships.pop(i)
+                        break
                 break
+            else:
+                continue
         
+        if hit:
+            print(f'{player1} HITS!')
+            hit = False
+        else:
+            print(f'{player1} MISSES!')
+
+        # Save the last shot coordinate of player 1
+        player1_lastshot = player1_shoot
+        
+        # PLayer 2's turn
+        print(f'{player2}s turn')
+        print(f'Last shot of {player2} was to {player2_lastshot}')
+
+        while player1_hits < hitpoints and player2_hits < hitpoints:
+            time.sleep(3)
+            player2_shoot = session[f'{player2_tag}'] # Collect shoot event of player 2
+
+            # Check if the player tries to shoot to the same coordinate as last time
+            if not all([a == b for a, b in zip(player2_shoot, player2_lastshot)]):
+                print(f'{player2} shoots to {player2_shoot}')
+
+                # Go through the other player's ship coordinates and if it hits act accordingly
+                for i in range(len(player1_ships)):
+                    if player1_ships[i] == player2_shoot:
+                        player2_hits += 1
+                        hit = True
+                        # Remove the hit coordinate from the other player's list
+                        player1_ships.pop(i)
+                        break
+                break
+            else:
+                continue
+        
+        if hit:
+            print(f'{player2} HITS!')
+            hit = False
+        else:
+            print(f'{player2} MISSES!')
+        
+        # Save the last shot coordinate of player 2
+        player2_lastshot = player2_shoot
+        
+    # Reset the player ship lists
     session[f'{player1}'] = []
     session[f'{player2}'] = []
 
+    # Check who won
     if player1_hits == hitpoints:
         print(f"{player1} won {player2}")
         return [player1, player2]
@@ -99,11 +154,11 @@ def find_match(player):
         return False  # No match found yet
 
 
-# Thread function for processing matchmaking requests matched_player
+# Thread function for processing matchmaking requests of players
 def matchmaking(queue):
     while True:
         if queue.qsize() >= 2:
-            print("match found")
+            print("Match found")
             player1 = queue.get()
             player2 = queue.get()
             game_thread = threading.Thread(target=start_game, args=(player1, player2))
@@ -209,8 +264,6 @@ def register():
             if username_check:
                 message = 'Account already exists !'
 
-            # TODO: Password requirements check
-
             elif not username or not password:
                 message = 'Please fill out the form !'
 
@@ -275,7 +328,6 @@ def handle_click():
         col = data['col']
         direction = data['orientation']
         length = data['length']
-        # state = data['state']
 
         session['ships'].append({
             'row': row,
@@ -294,7 +346,6 @@ def handle_click():
                 session[f'{player}'].append(ship)
 
         print(col, row, player)
-        # Perform server-side logic here
 
         return jsonify({'message': 'Cell clicked successfully',
                         'col': col,
