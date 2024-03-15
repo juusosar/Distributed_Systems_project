@@ -114,7 +114,7 @@ class Database:
         return verified
 
 
-# Example usage
+# Unit tests for database
 def main():
     db = Database('database.db')
     try:
@@ -122,12 +122,12 @@ def main():
         db.connect()
 
         # Add a new user
-        db.add_user("example_user", "password123", "2024-02-15")
+        db.add_user("example_user", "password123", "salt", "2024-02-15")
 
-        db.add_user("paavo", "sala", "2024-02-16")
+        db.add_user("paavo", "sala", "salt", "2024-02-16")
 
-        db.add_user("linnea", "sana", "2024-02-17")
-        db.add_user("linnea", "sana", "2024-02-17")
+        db.add_user("linnea", "sana", "salt", "2024-02-17")
+        db.add_user("linnea", "sana", "salt", "2024-02-17")
 
         # A game was played
         db.update_game_stats("paavo", "w")
