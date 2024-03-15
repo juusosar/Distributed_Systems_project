@@ -15,18 +15,22 @@
 
     <div class="grid-container">
         <!-- Game grid for player1 board -->
-        <div class="grid" id="grid-p1">
+        <div class="grid" id="grid-op">
         {% for row in range(10) %}
             {% for col in range(10) %}
-                <div class="cell" id="p1-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+                <div class="cell" id="op-cell-{{ row }}-{{ col }}" onclick="handleShoot({{ row }}, {{ col }})"></div>
             {% endfor %}
         {% endfor %}
         </div>
         <!-- Game grid for player2 board -->
-        <div class="grid" id="grid-p2">
+        <div class="grid" id="grid-own">
         {% for row in range(10) %}
             {% for col in range(10) %}
-                <div class="cell" id="p2-cell-{{ row }}-{{ col }}" onclick="handleCellClick({{ row }}, {{ col }})"></div>
+                {% if [row, col] in ships %}
+                    <div class="own-cell" id="own-cell-{{ row }}-{{ col }}" style="background-color: grey"></div>
+                {% else %}
+                    <div class="own-cell" id="own-cell-{{ row }}-{{ col }}"></div>
+                {% endif %}
             {% endfor %}
         {% endfor %}
         </div>
@@ -34,10 +38,11 @@
             <!-- Button to start/restart the game -->
         <button id="start-button">Start Game</button>
 
-<script src="../static/game.js"></script>
+
 <footer>
     <p>&copy; 2024 The Game</p>
 </footer>
 
+<script src="../static/game.js"></script>
 </body>
 </html>

@@ -83,6 +83,7 @@ footer {
 
 .setup {
     margin-left: 200px;
+    margin-top: 20px;
 }
 
 .gamesetup-container {
@@ -107,6 +108,13 @@ footer {
     margin-right: 50px;
 }
 
+.own-cell {
+    background-color: lightgrey;
+    border: 1px solid black;
+    cursor: pointer;
+    margin: 2px;
+}
+
 .cell {
     background-color: lightgrey;
     border: 1px solid black;
@@ -115,4 +123,8 @@ footer {
 }
 .cell:hover {
     background-color: grey;
+}
+
+.invalidtext {
+    color: red;
 }
