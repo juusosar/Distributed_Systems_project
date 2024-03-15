@@ -191,6 +191,7 @@ def login():
         return render_template('login.html', message=message)
     if request.method == 'POST':
         if request.form['name'] != "" and request.form['password'] != "":
+            login_start_time = time.time()
             username = request.form['name']
             password = request.form['password']
 
@@ -218,6 +219,10 @@ def login():
                 response = make_response(render_template('user.html', user=session["userid"]))
                 response.set_cookie('userid', session["userid"])
                 response.headers["location"] = url_for('user')
+                login_end_time = time.time()
+                d = open("time.txt", "a")
+                d.write(str(login_end_time - login_start_time))
+                d.close()
                 return response
             else:
                 message = 'Incorrect username or password'
@@ -248,6 +253,7 @@ def register():
         return render_template('register.html')
     if request.method == 'POST':
         if request.form['name'] != "" and request.form['password'] != "":
+            register_start_time = time.time()
             username = request.form['name']
             password = request.form['password']
 
@@ -276,6 +282,10 @@ def register():
                     db.add_user(username, hashed_password, salt, today)
                     db.connection.commit()
                     message = 'You have successfully registered!'
+                    register_end_time = time.time()
+                    f = open("register.txt", "a")
+                    f.write(str(register_end_time - register_start_time) + "\n")
+                    f.close()
 
                 except sqlite3.Error as error:
                     message = 'Something went wrong !'
