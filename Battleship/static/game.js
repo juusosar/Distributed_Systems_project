@@ -101,7 +101,7 @@ function sendClickRequest(data) {
             if (data['length'] === 1){
                 let shiptext = document.getElementById("shiptext")
                 shiptext.innerHTML =
-                    "<h3 id='shiptext'>All ships placed!\n Press 'Find Game' to start looking for an opponent.</h3>"
+                    "<h3 id='shiptext'>All ships placed!<br>Press 'Find Game' to start looking for an opponent.</h3>"
                 document.getElementById("startsetup").removeAttribute("hidden")
             }
         } else {

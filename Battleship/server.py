@@ -47,6 +47,9 @@ def start_game(challenger1, challenger2):
     session['games'][f'{game_id}'].update({'player1': player1})
     session['games'][f'{game_id}'].update({'player2': player2})
     session['games'][f'{game_id}'].update({'next': player1})
+    session['games'][f'{game_id}'].update({'winner': ""})
+    session['games'][f'{game_id}'].update({'shots': {f'{player1}': [],
+                                                     f'{player2}': []}})
 
     # Making necessary variables and collecting the shoot event tag of the players
     player1_tag = player1 + "tag"
@@ -140,9 +143,11 @@ def start_game(challenger1, challenger2):
     if player1_hits == hitpoints:
         print(f"{player1} won {player2}")
         result = [player1, player2]
+        session['games'][f'{game_id}']['winner'] = player1
     else:
         print(f"{player2} won {player1}")
         result = [player2, player1]
+        session['games'][f'{game_id}']['winner'] = player2
 
     # Log the result of the game to the database
     try:
@@ -233,6 +238,7 @@ def login():
                 login_end_time = time.time()
                 d = open("time.txt", "a")
                 d.write(str(login_end_time - login_start_time))
+                d.write("\n")
                 d.close()
                 return response
             else:
@@ -361,7 +367,7 @@ def handle_click():
 
         if f'{player}' not in session:
             session[f'{player}'] = []
-            session[f'{player}_hits'] = []
+            session[f'{player}_hits'] = [11, 11]
         else:
             print("Dictionary already has key : Hence value is not overwritten ")
 
@@ -418,7 +424,6 @@ def check():
     # if either one has won
     userid = request.cookies.get("userid")
     game = request.cookies.get("game_number")
-
     if userid == session['games'][game]['player1']:
         opponent = session['games'][game]['player2']
     else:
@@ -426,9 +431,12 @@ def check():
 
     if session['games'][game]['next'] == userid:
         return jsonify({'turn': True,
-                        'hits': session[f'{opponent}_hits']})
+                        'hits': session['games'][f'{game}']['shots'][f'{opponent}'],
+                        'winner': session['games'][game]['winner']})
     else:
-        return jsonify({'turn': False})
+        return jsonify({'turn': False,
+                        'hits': [],
+                        'winner': ""})
 
 
 @app.route('/shoot', methods=['POST'])
@@ -442,6 +450,7 @@ def handle_shoot():
         col = data['col']
 
         session[f'{tag}'] = [row, col]
+        session['games'][f'{game}']['shots'][player].append([row, col])
 
         time.sleep(1)
 

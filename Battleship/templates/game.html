@@ -15,15 +15,16 @@
         <div class="infotext">
             <h3 id="waiting">Waiting for opponent...</h3>
             <p id="turn"></p>
+            <p id="winner"></p>
+            <form action="/user" method="get">
+                <button class="return" id="return" type="submit" value="menu" hidden> Return to user menu</button>
+            </form>
         </div>
         <div class="opboard">
             Opponent's board
         </div>
         <div class="yourboard">
             Your board
-        </div>
-        <div class="ins">
-            <p id="ins" hidden> Shoot by clicking the cells on your opponents board</p>
         </div>
     </div>
 
@@ -64,10 +65,13 @@
         .then(data => {
             if (data['opponent'] !== "No opponent") {
                 stopInterval(opponentInterval);
-                document.getElementById('waiting').textContent = "Your opponent is " + data['opponent'] + "!";
+                document.getElementById('waiting').textContent = "Your opponent is " + data['opponent'] + "!"
                 if (data['start']) document.getElementById('turn').textContent = "It's your turn!";
-                else document.getElementById('turn').textContent = "It's the opponents turn!";
-                setInterval(changeTurn, 1000)
+                else {
+                    document.getElementById('turn').textContent = "It's the opponents turn!";
+                    gameInterval = setInterval(changeTurn, 1000);
+                }
+
             }
         })
         .catch(error => {
@@ -82,12 +86,18 @@
             if (data['turn']) {
                 document.getElementById('turn').textContent = "It's your turn!"
                 let temp
-                for (let i = 1; i < data['hits'].length; i++) {
+                for (let i = 0; i < data['hits'].length; i++) {
                     temp = document.getElementById('own-cell-' + data['hits'][i][0] + '-' + data['hits'][i][1])
                     temp.style.backgroundColor = 'grey'
-            }
+                }
             } else {
                 document.getElementById('turn').textContent = "It's the opponents turn!"
+            }
+            if (data['winner'] !== "") {
+                document.getElementById('turn').setAttribute("hidden", "")
+                document.getElementById('winner').innerHTML = "<p> The winner is" + data['winner'] + "!</p>"
+                document.getElementById('return').removeAttribute("hidden")
+                stopInterval(gameInterval)
             }
         }).catch(error => {
         console.error('Error:', error);
@@ -100,6 +110,7 @@
     fetchVariable();
 
     let opponentInterval = setInterval(fetchVariable, 3000);
+    let gameInterval
 
 </script>
 </body>

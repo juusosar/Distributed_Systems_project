@@ -135,13 +135,11 @@ footer {
     max-height: 70px;
     align-items: center;
 }
+
 .infotext, .opboard, .yourboard {
     flex: 1;
     margin: 130px;
     max-width: 250px;
 }
 
-.ins {
-    display: flex;
-    max-width: 200px;
-}
+
