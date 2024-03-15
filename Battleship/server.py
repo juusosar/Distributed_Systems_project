@@ -386,4 +386,3 @@ if __name__ == '__main__':
     app.run(debug=True)
     
     matchmaking_thread.join()
-   
