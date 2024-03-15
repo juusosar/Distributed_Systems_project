@@ -5,7 +5,7 @@ function handleCellClickSetup(row, col) {
     let orientation = document.querySelector('input[name="orientation"]:checked')
     let length
     let temp
-    let message = document.getElementById("invalid")    
+    let message = document.getElementById("invalid")
 
     if (parseInt(document.getElementById("shiplength").textContent) === null) return
     else length = parseInt(document.getElementById("shiplength").textContent)
@@ -17,7 +17,7 @@ function handleCellClickSetup(row, col) {
     else cell.style.backgroundColor = 'grey'
 
     switch(orientation['id']) {
-        
+
         case 'v':
             console.log(row, length)
             if (row + length > 10){
@@ -26,7 +26,7 @@ function handleCellClickSetup(row, col) {
                 return
             }
             for (let i = 0; i < length; i++) {
-                for (let j = 0; j < ships.length; j++) { 
+                for (let j = 0; j < ships.length; j++) {
                     if (ships[j][0] === (row + i) && ships[j][1] === (col)) {
                         message.removeAttribute("hidden")
                         cell.style.backgroundColor = "lightgrey"
@@ -78,17 +78,16 @@ function handleCellClickSetup(row, col) {
     sendClickRequest(data);
 }
 
-function handleShoot(row, col) {
-    let cell = document.getElementById('cell-' + row + '-' + col);
-
+async function handleShoot(row, col) {
+    let cell = document.getElementById('op-cell-' + row + '-' + col);
     let data = {'col': col,
             'row': row
     }
-    sendShootRequest(data);
+    console.log(await sendShootRequest(data, cell))
 }
 
 function sendClickRequest(data) {
-    // Send AJAX request to Flask server
+    // Send Click event to Flask server
     fetch('/cell_click', {
         method: 'POST',
         headers: {
@@ -114,9 +113,7 @@ function sendClickRequest(data) {
     });
 }
 
-
-function sendShootRequest(data) {
-    // Send AJAX request to Flask server
+function sendShootRequest(data, cell) {
     fetch('/shoot', {
         method: 'POST',
         headers: {
@@ -125,11 +122,23 @@ function sendShootRequest(data) {
         body: JSON.stringify(data)
     }).then(response => {
         if (response.ok) {
-            console.log(response.json())
+            return response.json()
         } else {
-            // Handle error response
             console.log(response)
         }
+    }).then(shoot_action => {
+        let shoot_data = shoot_action
+        console.log(shoot_data);
+        for (let i = 0; i < shoot_data['hits'].length; i++) {
+            console.log(shoot_data['hits'])
+            if (shoot_data['row'] === shoot_data['hits'][i][0] && shoot_data['col'] === shoot_data['hits'][i][1]) {
+                cell.style.backgroundColor = 'red'
+            } else {
+                cell.style.backgroundColor = 'grey'
+            }
+        }
+        document.getElementById('turn').textContent = "It's the opponents turn!"
+        return fetch('/turn');
     }).catch(error => {
         console.error('Error:', error);
     });
