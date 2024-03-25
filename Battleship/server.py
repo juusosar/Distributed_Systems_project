@@ -9,6 +9,7 @@ import bcrypt
 import threading
 import queue
 import time
+import os
 
 app = Flask(__name__, static_url_path='/static')
 session = {'ships': [],
@@ -470,6 +471,6 @@ if __name__ == '__main__':
     print("START")
     matchmaking_thread = threading.Thread(target=matchmaking, args=(matchmaking_queue,))
     matchmaking_thread.start()
-    app.run(debug=True)
-
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
     matchmaking_thread.join()
