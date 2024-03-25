@@ -24,16 +24,20 @@ Used programming languages: Python, Html, SQL, CSS, JavaScript
 ## Getting Started:
 Clone the repository and go to the Distributed_Systems_project folder.
 
-Start the application with (it downloads all the requirements):
+Start the application with (it downloads all the requirements) (and use sudo if needed):
 ```console
-$ docker build -t battleship
+$ docker buildx build .
 ```
 
 ```console
-$ docker run -t battleship .
+$ docker image ls
 ```
 
-Then go to http://127.0.0.1:5000 to access the game interface.
+```console
+$ docker run <image-id>
+```
+
+Then go to http://172.17.0.2:5000 to access the game interface.
 
 
 ## REPORT:
